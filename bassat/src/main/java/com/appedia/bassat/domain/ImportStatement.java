@@ -1,12 +1,13 @@
 package com.appedia.bassat.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Muz Omar
  */
-public class ImportStatement {
+public class ImportStatement implements Serializable {
 
     private long importStatementId;
     private Date importDateTime;

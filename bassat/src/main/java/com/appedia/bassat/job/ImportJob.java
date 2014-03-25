@@ -16,10 +16,19 @@ public class ImportJob extends QuartzJobBean {
 
     private ImportService importService;
 
+    /**
+     *
+     * @param importService
+     */
     public void setImportService(ImportService importService) {
         this.importService = importService;
     }
 
+    /**
+     *
+     * @param context
+     * @throws JobExecutionException
+     */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         System.out.println("## EXECUTING ImportJob ##");
         ImportStatement importStatement = new ImportStatement();

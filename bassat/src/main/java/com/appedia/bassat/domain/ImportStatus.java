@@ -6,17 +6,17 @@ package com.appedia.bassat.domain;
  */
 public enum ImportStatus {
 
-    PENDING("P"),
-    ERROR("X"),
-    SUCCESS("S");
+    PENDING(0),
+    ERROR(-1),
+    SUCCESS(1);
 
-    private String statusCode;
+    private int statusCode;
 
-    private ImportStatus(String statusCode) {
+    private ImportStatus(int statusCode) {
         this.statusCode = statusCode;
     }
 
-    public String getStatusCode() {
+    public int getStatusCode() {
         return statusCode;
     }
 

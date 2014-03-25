@@ -20,10 +20,19 @@ public class ImportService {
     @Autowired
     private ImportStatementMapper importStatementMapper;
 
+    /**
+     *
+     * @param importStatus
+     * @return
+     */
     public List<ImportStatement> getImportStatementsByStatus(ImportStatus importStatus) {
         return importStatementMapper.getImportStatementsByStatus(importStatus);
     }
 
+    /**
+     *
+     * @param importStatement
+     */
     @Transactional
     public void insertImportStatement(ImportStatement importStatement) {
         importStatementMapper.insertImportStatement(importStatement);

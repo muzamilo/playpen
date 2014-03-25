@@ -48,7 +48,7 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="typeAliasesPackage" value="com.appedia.bassat.domain" />
-        <!--<property name="configLocation" value="classpath:config/mybatis-config.xml"/>-->
+        <property name="configLocation" value="classpath:config/mybatis-config.xml"/>
     </bean>
 
     <!-- scan for mappers and let them be autowired -->

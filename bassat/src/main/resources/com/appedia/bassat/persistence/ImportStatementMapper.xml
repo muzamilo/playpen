@@ -6,10 +6,14 @@
 
     <cache/>
 
-    <select id="getImportStatementsByStatus" parameterType="String" resultType="ImportStatement">
-        SELECT import_statement_id, import_datetime, link_user_email, link_account_number, md5, status
+    <select id="getImportStatementsByStatus" parameterType="ImportStatus" resultType="ImportStatement">
+        SELECT import_statement_id as importStatementId,
+               import_datetime as importDateTime,
+               link_user_email as linkUserEmail,
+               link_account_number as linkAccountNumber,
+               md5,
+               status
         FROM import_statement
-        WHERE status = #{importStatus.statusCode}
     </select>
 
     <insert id="insertImportStatement" parameterType="ImportStatement">

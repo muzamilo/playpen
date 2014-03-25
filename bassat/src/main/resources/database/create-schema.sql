@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `import_statement` (
   `link_account_number` varchar(20) NULL,
   `md5` char(32) NOT NULL,
 --  `pdf_binary` blob NOT NULL,
-  `status` char(1) NOT NULL,
+  `status` numeric(1) NOT NULL,
   PRIMARY KEY  (`import_statement_id`),
   UNIQUE KEY `UNQ_USER_ACC_HASH` (`link_user_email`, `link_account_number`, `md5`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
