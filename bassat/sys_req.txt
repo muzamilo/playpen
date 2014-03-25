@@ -1,0 +1,87 @@
+CREATE DATABASE `bassat` DEFAULT CHARSET utf8;
+grant usage on *.* to bassat@localhost identified by 'bassat';
+grant all privileges on bassat.* to bassat@localhost;
+
+user
+- user_id
+- id_number
+- title
+- firstname
+- surname
+- password
+- notification_email
+- source_email
+
+account
+- account_id
+- user_id
+- type
+- account_number
+
+statement
+- statement_id
+- import_statement_id
+- user_id
+- account_id
+- statement_number
+- frequency
+- fromDate
+- toDate
+
+transaction
+- transaction_id
+- account_id
+- transaction_datetime
+- description
+- tag
+- amount
+
+import_statement
+- import_statement_id
+- import_datetime
+- link_user_id
+- link_account_number
+- hash_key
+- pdf_binary
+- status
+
+
+
+PDF_Importer
+
+1. Poll mailbox
+
+2. Get mail 
+
+3. If sender is not from registered user, delete mail and stop
+
+4. If there are no attachments, delete mail and stop
+
+5. Validate each attachment,
+	5.1. If not PDF file, delete mail and stop
+	5.2. Write valid PDF file to working directory
+	5.3. If file size > max file size, delete file, mail and stop
+
+6. Iterate PDF files in working directory, 
+	6.1. Extract PDF file to Java objects - if parse errors, flag as "IMPORT ERROR"
+	6.1. Get MD5 sum of PDF file
+	6.2. Commit file to "import_statement" - set pdf_binary, link_user_id, hash_key, link_account_number (set status: 'P' if successful import and link_account_number exists, 'X' otherwise)
+
+7. Delete mail
+
+
+PDF_Extractor
+
+1. Iterate "import_statement" table for 'P' records
+
+2. Extract to Java objects
+
+3. Create statement and transaction entries
+
+4. Update "import_statement" record status to 'S'
+
+
+
+
+
+
