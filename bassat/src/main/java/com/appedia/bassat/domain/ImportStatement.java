@@ -13,7 +13,7 @@ public class ImportStatement implements Serializable {
     private Date importDateTime;
     private String linkUserEmail;
     private String linkAccountNumber;
-    private String md5;
+    private String pdfFileHashKey;
     private byte[] pdfFileData;
     private ImportStatus status;
 
@@ -49,12 +49,12 @@ public class ImportStatement implements Serializable {
         this.linkAccountNumber = linkAccountNumber;
     }
 
-    public String getMd5() {
-        return md5;
+    public String getPdfFileHashKey() {
+        return pdfFileHashKey;
     }
 
-    public void setMd5(String md5) {
-        this.md5 = md5;
+    public void setPdfFileHashKey(String pdfFileHashKey) {
+        this.pdfFileHashKey = pdfFileHashKey;
     }
 
     public byte[] getPdfFileData() {
@@ -79,7 +79,7 @@ public class ImportStatement implements Serializable {
                 "importDateTime=" + importDateTime +
                 ", linkUserEmail='" + linkUserEmail + '\'' +
                 ", linkAccountNumber='" + linkAccountNumber + '\'' +
-                ", md5='" + md5 + '\'' +
+                ", pdfFileHashKey='" + pdfFileHashKey + '\'' +
                 ", pdfFileData.length='" + (pdfFileData.length) + '\'' +
                 ", status=" + status +
                 '}';

@@ -57,13 +57,11 @@ public class HashUtil {
      * @return
      * @throws IOException
      */
-    public static String hash(File file, String algorithm)
-            throws IOException {
+    public static String hash(File file, String algorithm) throws IOException {
 
-        FileInputStream fileInputStream = null;
+        FileInputStream fileInputStream = new FileInputStream(file);
         try {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
-            fileInputStream = new FileInputStream(file);
 
             DigestInputStream digestInputStream = new DigestInputStream(fileInputStream, digest);
 
@@ -77,7 +75,6 @@ public class HashUtil {
             return new BigInteger(1, hash).toString(16);
 
         } catch (NoSuchAlgorithmException e) {
-
             throw new RuntimeException(e);
 
         } finally {

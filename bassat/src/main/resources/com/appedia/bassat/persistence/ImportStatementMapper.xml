@@ -11,15 +11,15 @@
                import_datetime as importDateTime,
                link_user_email as linkUserEmail,
                link_account_number as linkAccountNumber,
-               md5,
+               pdf_file_hash_key as pdfFileHashKey,
                pdf_file_data as pdfFileData,
                status
         FROM import_statement
     </select>
 
     <insert id="insertImportStatement" parameterType="ImportStatement">
-        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, md5, pdf_file_data, status)
-        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{md5}, #{pdfFileData}, #{status.statusCode})
+        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, pdf_file_hash_key, pdf_file_data, status)
+        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{pdfFileHashKey}, #{pdfFileData}, #{status.statusCode})
     </insert>
 
 </mapper>
