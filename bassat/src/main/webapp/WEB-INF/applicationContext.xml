@@ -56,7 +56,9 @@
         <property name="basePackage" value="com.appedia.bassat.persistence" />
     </bean>
 
-    <bean id="importService" class="com.appedia.bassat.service.ImportService"/>
+    <bean id="importService" class="com.appedia.bassat.service.ImportServiceImpl">
+        <property name="enableCompression" value="false"/>
+    </bean>
 
     <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
         <property name="jobClass" value="com.appedia.bassat.job.ImportJob"/>
