@@ -5,6 +5,7 @@ import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.service.ImportService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.util.Date;
@@ -37,8 +38,13 @@ public class ImportJob extends QuartzJobBean {
         importStatement.setLinkUserEmail("linkUserEmail");
         importStatement.setLinkAccountNumber("linkAccountNumber");
         importStatement.setImportDateTime(new Date());
-        //importService.insertImportStatement(importStatement);
-        System.out.println(importService.getImportStatementsByStatus(ImportStatus.PENDING));
+        importStatement.setPdfFileData("TEST FILE DATA".getBytes());
+        try {
+            importService.persistStatement(importStatement);
+        } catch (DuplicateKeyException e) {
+            System.out.println(importStatement + " already exists");
+        }
+        System.out.println(importService.getStatementsToImport());
     }
 
 }

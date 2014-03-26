@@ -12,13 +12,14 @@
                link_user_email as linkUserEmail,
                link_account_number as linkAccountNumber,
                md5,
+               pdf_file_data as pdfFileData,
                status
         FROM import_statement
     </select>
 
     <insert id="insertImportStatement" parameterType="ImportStatement">
-        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, md5, status)
-        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{md5}, #{status.statusCode})
+        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, md5, pdf_file_data, status)
+        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{md5}, #{pdfFileData}, #{status.statusCode})
     </insert>
 
 </mapper>

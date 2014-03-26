@@ -4,6 +4,7 @@ import com.appedia.bassat.domain.ImportStatement;
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.persistence.ImportStatementMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +23,18 @@ public class ImportService {
 
     /**
      *
-     * @param importStatus
      * @return
      */
-    public List<ImportStatement> getImportStatementsByStatus(ImportStatus importStatus) {
-        return importStatementMapper.getImportStatementsByStatus(importStatus);
+    public List<ImportStatement> getStatementsToImport() {
+        return importStatementMapper.getImportStatementsByStatus(ImportStatus.PENDING);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<ImportStatement> getStatementsToRetryImport() {
+        return importStatementMapper.getImportStatementsByStatus(ImportStatus.ERROR);
     }
 
     /**
@@ -34,7 +42,7 @@ public class ImportService {
      * @param importStatement
      */
     @Transactional
-    public void insertImportStatement(ImportStatement importStatement) {
+    public void persistStatement(ImportStatement importStatement) throws DuplicateKeyException {
         importStatementMapper.insertImportStatement(importStatement);
     }
 

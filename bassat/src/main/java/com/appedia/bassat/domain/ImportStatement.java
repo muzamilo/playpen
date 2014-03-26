@@ -14,7 +14,7 @@ public class ImportStatement implements Serializable {
     private String linkUserEmail;
     private String linkAccountNumber;
     private String md5;
-    private String pdfBinary;
+    private byte[] pdfFileData;
     private ImportStatus status;
 
     public long getImportStatementId() {
@@ -57,12 +57,12 @@ public class ImportStatement implements Serializable {
         this.md5 = md5;
     }
 
-    public String getPdfBinary() {
-        return pdfBinary;
+    public byte[] getPdfFileData() {
+        return pdfFileData;
     }
 
-    public void setPdfBinary(String pdfBinary) {
-        this.pdfBinary = pdfBinary;
+    public void setPdfFileData(byte[] pdfFileData) {
+        this.pdfFileData = pdfFileData;
     }
 
     public ImportStatus getStatus() {
@@ -80,7 +80,7 @@ public class ImportStatement implements Serializable {
                 ", linkUserEmail='" + linkUserEmail + '\'' +
                 ", linkAccountNumber='" + linkAccountNumber + '\'' +
                 ", md5='" + md5 + '\'' +
-                ", pdfBinary='" + pdfBinary + '\'' +
+                ", pdfFileData.length='" + (pdfFileData.length) + '\'' +
                 ", status=" + status +
                 '}';
     }
