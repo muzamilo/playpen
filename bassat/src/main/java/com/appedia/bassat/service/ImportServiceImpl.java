@@ -55,11 +55,11 @@ public class ImportServiceImpl implements ImportService {
      * @param userEmail
      * @param accountNumber
      * @param fileData
-     * @throws IOException
-     * @throws DuplicateKeyException
+     * @param status
+     * @throws ImportException
      */
     @Transactional
-    public void importStatement(String userEmail, String accountNumber, byte[] fileData) throws ImportException {
+    public void importStatement(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
 
         if (userEmail == null || fileData == null) {
             throw new IllegalArgumentException("userEmail and statementPdfFile are required");
@@ -79,7 +79,7 @@ public class ImportServiceImpl implements ImportService {
             statement.setLinkAccountNumber(accountNumber);
             statement.setLinkUserEmail(userEmail);
             statement.setPdfFileHashKey(fileHashKey);
-            statement.setStatus(ImportStatus.PENDING);
+            statement.setStatus(status);
             statement.setImportDateTime(new Date());
         } catch (IOException e) {
             throw new ImportException("Unable to read file data : " + e.toString(), e);

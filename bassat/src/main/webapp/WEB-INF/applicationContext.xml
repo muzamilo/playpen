@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    Copyright 2010 The myBatis Team
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -26,6 +11,7 @@
      http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
+    <!-- setup the MySQL datasource -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://localhost:3306/bassat?autoReconnect=true&amp;createDatabaseIfNotExist=true&amp;" />
@@ -56,26 +42,14 @@
         <property name="basePackage" value="com.appedia.bassat.persistence" />
     </bean>
 
-    <bean id="importService" class="com.appedia.bassat.service.ImportServiceImpl">
-        <property name="enableCompression" value="false"/>
-    </bean>
-
-    <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.ImportJob"/>
-        <property name="jobDataAsMap">
-            <map>
-                <entry key="importService" value-ref="importService"/>
-            </map>
-        </property>
-    </bean>
-
-    <!-- Simple Trigger, run every 5 seconds -->
+    <!-- simple Trigger, run every 5 seconds -->
     <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="importJob" />
         <property name="repeatInterval" value="5000" />
         <property name="startDelay" value="1000" />
     </bean>
 
+    <!-- scheduler for the Import Job based on the Simple Trigger -->
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="jobDetails">
             <list>
@@ -89,16 +63,36 @@
         </property>
     </bean>
 
-    <bean id="mailReader" class="com.appedia.bassat.common.MailReader">
-        <property name="host" value="imap.gmail.com"/>
-        <property name="port" value="25"/>
-        <property name="username" value="myusername@gmail.com"/>
-        <property name="password" value="mypassword"/>
-        <property name="javaMailProperties">
-            <props>
-                <!--<prop key="...">...</prop>-->
-            </props>
+    <!-- define services -->
+    <bean id="importService" class="com.appedia.bassat.service.ImportServiceImpl">
+        <property name="enableCompression" value="false"/>
+    </bean>
+
+    <bean id="userService" class="com.appedia.bassat.service.UserServiceImpl">
+    </bean>
+
+    <!-- define the running Import Job -->
+    <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.appedia.bassat.job.ImportJob"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="importService" value-ref="importService"/>
+                <entry key="userService" value-ref="userService"/>
+                <entry key="mailboxReader" value-ref="mailboxReader"/>
+                <entry key="pdfExtractor" value-ref="pdfExtractor"/>
+            </map>
         </property>
     </bean>
 
+    <!-- define the mailbox reader -->
+    <bean id="mailboxReader" class="com.appedia.bassat.job.MailboxReader">
+        <property name="host" value="imap.gmail.com"/>
+        <property name="port" value="25"/>
+        <property name="username" value="send-bassat@gmail.com"/>
+        <property name="password" value="Muzamil0"/>
+    </bean>
+
+    <!-- define the PDF Extractor -->
+    <bean id="pdfExtractor" class="com.appedia.bassat.job.PDFExtractor">
+    </bean>
 </beans>
