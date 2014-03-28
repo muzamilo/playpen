@@ -1,6 +1,6 @@
 package com.appedia.bassat.service;
 
-import com.appedia.bassat.domain.ImportStatement;
+import com.appedia.bassat.domain.ImportedStatement;
 
 import java.io.File;
 import java.util.List;
@@ -15,21 +15,21 @@ public interface ImportService {
      *
      * @return
      */
-    List<ImportStatement> getStatementsToImport();
+    List<ImportedStatement> getStatementsToImport();
 
     /**
      *
      * @return
      */
-    List<ImportStatement> getStatementsToRetryImport();
+    List<ImportedStatement> getStatementsToRetryImport();
 
     /**
      *
      * @param userEmail
      * @param accountNumber
-     * @param statementPdfFile
+     * @param fileData
      * @throws ImportException
      */
-    void importStatementFile(String userEmail, String accountNumber, File statementPdfFile) throws ImportException;
+    void importStatement(String userEmail, String accountNumber, byte[] fileData) throws ImportException;
 
 }

@@ -88,4 +88,17 @@
             </list>
         </property>
     </bean>
+
+    <bean id="mailReader" class="com.appedia.bassat.common.MailReader">
+        <property name="host" value="imap.gmail.com"/>
+        <property name="port" value="25"/>
+        <property name="username" value="myusername@gmail.com"/>
+        <property name="password" value="mypassword"/>
+        <property name="javaMailProperties">
+            <props>
+                <!--<prop key="...">...</prop>-->
+            </props>
+        </property>
+    </bean>
+
 </beans>

@@ -7,7 +7,7 @@ import java.util.Date;
  *
  * @author Muz Omar
  */
-public class ImportStatement implements Serializable {
+public class ImportedStatement implements Serializable {
 
     private long importStatementId;
     private Date importDateTime;
@@ -75,7 +75,7 @@ public class ImportStatement implements Serializable {
 
     @Override
     public String toString() {
-        return "ImportStatement{" +
+        return "ImportedStatement{" +
                 "importDateTime=" + importDateTime +
                 ", linkUserEmail='" + linkUserEmail + '\'' +
                 ", linkAccountNumber='" + linkAccountNumber + '\'' +

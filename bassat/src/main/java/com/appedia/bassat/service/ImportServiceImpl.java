@@ -2,19 +2,14 @@ package com.appedia.bassat.service;
 
 import com.appedia.bassat.common.CompressionUtil;
 import com.appedia.bassat.common.HashUtil;
-import com.appedia.bassat.domain.ImportStatement;
+import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.ImportStatus;
-import com.appedia.bassat.persistence.ImportStatementMapper;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
+import com.appedia.bassat.persistence.ImportedStatementMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +23,7 @@ import java.util.List;
 public class ImportServiceImpl implements ImportService {
 
     @Autowired
-    private ImportStatementMapper importStatementMapper;
+    private ImportedStatementMapper importedStatementMapper;
     private boolean enableCompression;
 
     /**
@@ -43,47 +38,43 @@ public class ImportServiceImpl implements ImportService {
      *
      * @return
      */
-    public List<ImportStatement> getStatementsToImport() {
-        return importStatementMapper.getImportStatementsByStatus(ImportStatus.PENDING);
+    public List<ImportedStatement> getStatementsToImport() {
+        return importedStatementMapper.getImportedStatementsByStatus(ImportStatus.PENDING);
     }
 
     /**
      *
      * @return
      */
-    public List<ImportStatement> getStatementsToRetryImport() {
-        return importStatementMapper.getImportStatementsByStatus(ImportStatus.ERROR);
+    public List<ImportedStatement> getStatementsToRetryImport() {
+        return importedStatementMapper.getImportedStatementsByStatus(ImportStatus.ERROR);
     }
 
     /**
      *
      * @param userEmail
      * @param accountNumber
-     * @param statementPdfFile
+     * @param fileData
      * @throws IOException
      * @throws DuplicateKeyException
      */
     @Transactional
-    public void importStatementFile(String userEmail, String accountNumber, File statementPdfFile) throws ImportException {
+    public void importStatement(String userEmail, String accountNumber, byte[] fileData) throws ImportException {
 
-        if (userEmail == null || statementPdfFile == null) {
+        if (userEmail == null || fileData == null) {
             throw new IllegalArgumentException("userEmail and statementPdfFile are required");
         }
 
-        if (!FilenameUtils.getExtension(statementPdfFile.getName()).equalsIgnoreCase("pdf")) {
-            throw new UnsupportedOperationException("Unable to import " + statementPdfFile);
-        }
-
-        ImportStatement statement;
+        ImportedStatement statement;
         try {
-            byte[] fileData = IOUtils.toByteArray(new BufferedInputStream(new FileInputStream(statementPdfFile)));
             if (enableCompression) {
-                fileData = CompressionUtil.compress(fileData);
                 System.out.println("#### COMPRESSING DATA ####");
+                fileData = CompressionUtil.compress(fileData);
+                System.out.println("File size is now " + fileData.length + " bytes");
             }
-            String fileHashKey = HashUtil.hash(statementPdfFile, "SHA1");
+            String fileHashKey = HashUtil.hash(new String(fileData), "SHA1");
 
-            statement = new ImportStatement();
+            statement = new ImportedStatement();
             statement.setPdfFileData(fileData);
             statement.setLinkAccountNumber(accountNumber);
             statement.setLinkUserEmail(userEmail);
@@ -91,11 +82,11 @@ public class ImportServiceImpl implements ImportService {
             statement.setStatus(ImportStatus.PENDING);
             statement.setImportDateTime(new Date());
         } catch (IOException e) {
-            throw new ImportException("Unable to read file " + statementPdfFile.getName() + ": " + e.toString(), e);
+            throw new ImportException("Unable to read file data : " + e.toString(), e);
         }
 
         try {
-            importStatementMapper.insertImportStatement(statement);
+            importedStatementMapper.insertImportedStatement(statement);
         } catch (DuplicateKeyException e) {
             throw new ImportException("Statement has already been imported", e);
         }

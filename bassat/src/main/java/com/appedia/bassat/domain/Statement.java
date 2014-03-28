@@ -3,11 +3,8 @@ package com.appedia.bassat.domain;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/21/14
- * Time: 2:49 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Muz Omar
  */
 public class Statement {
 
@@ -15,6 +12,7 @@ public class Statement {
     private StatementFrequency frequency;
     private Date fromDate;
     private Date toDate;
+    private String accountNumber;
 
     public String getReference() {
         return reference;
@@ -46,5 +44,13 @@ public class Statement {
 
     public void setToDate(Date toDate) {
         this.toDate = toDate;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }
