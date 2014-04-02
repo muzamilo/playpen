@@ -1,16 +1,33 @@
 package com.appedia.bassat.domain;
 
-/**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/21/14
- * Time: 2:45 PM
- * To change this template use File | Settings | File Templates.
- */
-public class Account {
+import java.io.Serializable;
 
+/**
+ *
+ * @author Muz Omar
+ */
+public class Account implements Serializable {
+
+    private long accountId;
+    private long userId;
     private AccountType type;
-    private long accountNumber;
+    private String identifier;
+
+    public long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public AccountType getType() {
         return type;
@@ -20,11 +37,28 @@ public class Account {
         this.type = type;
     }
 
-    public long getAccountNumber() {
-        return accountNumber;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setAccountNumber(long accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Account account = (Account) o;
+
+        if (accountId != account.accountId) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (accountId ^ (accountId >>> 32));
     }
 }

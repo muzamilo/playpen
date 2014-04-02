@@ -16,6 +16,13 @@ public class Transaction {
     private String indexedDescription;
     private double amount;
 
+    public Transaction(Date txDateTime, String rawDescription, String indexedDescription, double amount) {
+        this.txDateTime = txDateTime;
+        this.rawDescription = rawDescription;
+        this.indexedDescription = indexedDescription;
+        this.amount = amount;
+    }
+
     public Date getTxDateTime() {
         return txDateTime;
     }

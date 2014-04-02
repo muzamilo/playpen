@@ -45,7 +45,7 @@
     <!-- simple Trigger, run every 5 seconds -->
     <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="importJob" />
-        <property name="repeatInterval" value="5000" />
+        <property name="repeatInterval" value="20000" />
         <property name="startDelay" value="1000" />
     </bean>
 
@@ -67,9 +67,8 @@
     <bean id="importService" class="com.appedia.bassat.service.ImportServiceImpl">
         <property name="enableCompression" value="false"/>
     </bean>
-
-    <bean id="userService" class="com.appedia.bassat.service.UserServiceImpl">
-    </bean>
+    <bean id="userService" class="com.appedia.bassat.service.UserServiceImpl"/>
+    <bean id="accountService" class="com.appedia.bassat.service.AccountServiceImpl"/>
 
     <!-- define the running Import Job -->
     <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
@@ -78,21 +77,40 @@
             <map>
                 <entry key="importService" value-ref="importService"/>
                 <entry key="userService" value-ref="userService"/>
+                <entry key="accountService" value-ref="accountService"/>
                 <entry key="mailboxReader" value-ref="mailboxReader"/>
+                <entry key="statementBuilder" value-ref="statementBuilder"/>
                 <entry key="pdfExtractor" value-ref="pdfExtractor"/>
             </map>
         </property>
     </bean>
 
     <!-- define the mailbox reader -->
-    <bean id="mailboxReader" class="com.appedia.bassat.job.MailboxReader">
-        <property name="host" value="imap.gmail.com"/>
-        <property name="port" value="25"/>
-        <property name="username" value="send-bassat@gmail.com"/>
+    <bean id="mailboxReader" class="com.appedia.bassat.job.mailintegration.MailboxReader">
+        <property name="host" value="pop.gmail.com"/>
+        <property name="protocol" value="imaps"/>
+        <property name="username" value="send2basat@gmail.com"/>
         <property name="password" value="Muzamil0"/>
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.store.protocol">imaps</prop>
+            </props>
+        </property>
     </bean>
 
-    <!-- define the PDF Extractor -->
-    <bean id="pdfExtractor" class="com.appedia.bassat.job.PDFExtractor">
+    <!-- define the PDFExtractor -->
+    <bean id="pdfExtractor" class="com.appedia.bassat.job.statementio.PDFExtractor">
+        <property name="debug" value="false"/>
+        <property name="maxSupportedFileSize" value="65535"/>
     </bean>
+
+    <!-- define the Statement Builder -->
+    <bean id="statementBuilder" class="com.appedia.bassat.job.statementio.StatementBuilder">
+        <property name="transactionAccountStatementParser" ref="transactionAccountStatementParser"/>
+        <property name="creditCardStatementParser" ref="creditCardStatementParser"/>
+    </bean>
+
+    <bean id="transactionAccountStatementParser" class="com.appedia.bassat.job.statementio.TransactionAccountStatementParser"/>
+    <bean id="creditCardStatementParser" class="com.appedia.bassat.job.statementio.CreditCardStatementParser"/>
+
 </beans>

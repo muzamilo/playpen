@@ -1,11 +1,8 @@
 package com.appedia.bassat.domain;
 
 /**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/13/14
- * Time: 9:39 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Muz Omar
  */
 public enum StatementFrequency {
 

@@ -1,21 +1,28 @@
 package com.appedia.bassat.domain;
 
-/**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/21/14
- * Time: 2:48 PM
- * To change this template use File | Settings | File Templates.
- */
-public class User {
+import java.io.Serializable;
 
+/**
+ *
+ * @author Muz Omar
+ */
+public class User implements Serializable {
+
+    private long userId;
     private String idNumber;
     private String title;
-    private String firstname;
+    private String firstName;
     private String surname;
     private String password;
-    private String notificationEmail;
-    private String importSourceEmail;
+    private String email;
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
     public String getIdNumber() {
 
@@ -34,12 +41,12 @@ public class User {
         this.title = title;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getSurname() {
@@ -58,19 +65,13 @@ public class User {
         this.password = password;
     }
 
-    public String getNotificationEmail() {
-        return notificationEmail;
+    public String getEmail() {
+        return email;
     }
 
-    public void setNotificationEmail(String notificationEmail) {
-        this.notificationEmail = notificationEmail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getImportSourceEmail() {
-        return importSourceEmail;
-    }
 
-    public void setImportSourceEmail(String importSourceEmail) {
-        this.importSourceEmail = importSourceEmail;
-    }
 }

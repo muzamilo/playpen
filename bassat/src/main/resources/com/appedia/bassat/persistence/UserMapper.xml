@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.appedia.bassat.persistence.UserMapper">
+
+    <cache/>
+
+    <select id="getUserByEmail" parameterType="String" resultType="User">
+        SELECT user_id as userId,
+               id_number as idNumber,
+               title,
+               first_name as firstName,
+               surname,
+               password,
+               email
+        FROM user
+        WHERE email=#{emailAddress}
+    </select>
+
+</mapper>
+
+
+

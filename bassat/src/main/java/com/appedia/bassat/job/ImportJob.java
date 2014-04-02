@@ -2,7 +2,14 @@ package com.appedia.bassat.job;
 
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.Statement;
-import com.appedia.bassat.service.ImportException;
+import com.appedia.bassat.domain.User;
+import com.appedia.bassat.job.mailintegration.InvalidMessageException;
+import com.appedia.bassat.job.mailintegration.MailboxMessageHandler;
+import com.appedia.bassat.job.mailintegration.MailboxReader;
+import com.appedia.bassat.job.statementio.PDFExtractor;
+import com.appedia.bassat.job.statementio.ParseException;
+import com.appedia.bassat.job.statementio.StatementBuilder;
+import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.ImportService;
 import com.appedia.bassat.service.UserService;
 import org.apache.commons.io.IOUtils;
@@ -14,8 +21,9 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import java.io.IOException;
-import java.text.ParseException;
+import javax.mail.internet.InternetAddress;
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * @author muz
@@ -24,6 +32,8 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
 
     private ImportService importService;
     private UserService userService;
+    private AccountService accountService;
+    private StatementBuilder statementBuilder;
     private MailboxReader mailboxReader;
     private PDFExtractor pdfExtractor;
 
@@ -33,11 +43,11 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
      * @throws JobExecutionException
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("## BEGIN EXECUTING ImportJob ##");
+        System.out.println("###### EXECUTING ImportJob ######");
 
         getMailboxReader().processInbox(this);
 
-        System.out.println("## END EXECUTING ImportJob ##");
+        System.out.println("#################################");
 
     }
 
@@ -46,47 +56,70 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
      * @param message
      * @throws MessagingException
      */
-    public void onMessage(final Message message) throws MessagingException {
+    public void onMessage(final Message message) throws Exception {
 
-        String emailAddress = message.getFrom()[0].toString();
+        String emailAddress = message.getFrom() == null ? null : ((InternetAddress) message.getFrom()[0]).getAddress();
 
-        if (!getUserService().verifyRegisteredUser(emailAddress)) {
-            System.err.println("No registered users with email address " + emailAddress);
+        // find user for this email
+        User user = getUserService().getUserByEmail(emailAddress);
+        if (user == null) {
+            throw new InvalidMessageException("No registered users with email address " + emailAddress);
 
         } else {
-            try {
-                Multipart part = (Multipart) message.getContent();
-                int nParts = part.getCount();
-                if (nParts == 0) {
-                    System.err.println("No statement PDF file attachments found");
+            Multipart part = (Multipart) message.getContent();
+            int nParts = part.getCount();
+            if (nParts == 0) {
+                throw new InvalidMessageException("No statement PDF file attachments found");
 
-                } else {
-                    for (int i = 0; i < nParts; i++) {
-                        String attachment = part.getBodyPart(i).getFileName();
-                        if (attachment != null && attachment.trim().toLowerCase().endsWith(".pdf")) {
-                            byte[] pdfContent = IOUtils.toByteArray(part.getBodyPart(i).getInputStream());
-                            if (pdfContent.length > 65535) {
-                                System.err.println("Unsupported file attachment " + attachment + " - skipping ...");
-                            } else {
-                                System.out.println("Loaded attachment " + pdfContent.length + " bytes");
-                                try {
-                                    Statement statement = getPdfExtractor().extract(pdfContent);
-                                    getImportService().importStatement(emailAddress, statement.getAccountNumber(), pdfContent, ImportStatus.PENDING);
-                                } catch (ParseException e) {
-                                    getImportService().importStatement(emailAddress, null, pdfContent, ImportStatus.ERROR);
-                                }
+            } else {
+                for (int i = 0; i < nParts; i++) {
+
+                    // get file attachment for this message
+                    String fileAttachment = part.getBodyPart(i).getFileName();
+
+                    // check if file attachment is a PDF
+                    if (fileAttachment != null && fileAttachment.trim().toLowerCase().endsWith(".pdf")) {
+                        System.out.println("Found fileAttachment " + fileAttachment);
+                        File tempPdfFile = new File(System.getProperty("java.io.tmpdir") + File.separator + fileAttachment);
+                        IOUtils.copy(part.getBodyPart(i).getInputStream(), new FileOutputStream(tempPdfFile));
+
+                        // import PDF
+                        System.out.println("Importing fileAttachment " + tempPdfFile.getAbsolutePath() + " (" + tempPdfFile.length() + " bytes)");
+                        try {
+
+                            // extract PDF
+                            File tempExtractedPdfFile = getPdfExtractor().extract(tempPdfFile, user.getIdNumber());
+                            System.out.println("Extracted PDF file " + tempExtractedPdfFile.getAbsolutePath());
+
+                            // validate statement
+                            Statement statement = getStatementBuilder().build(tempExtractedPdfFile);
+                            String accountIdentifier = statement.getHeader().getAccountIdentifier();
+                            if (!getAccountService().hasAccount(user, accountIdentifier)) {
+                                throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
                             }
-                        } else {
-                            System.err.println("Unsupported file attachment " + attachment + " - skipping ...");
+
+                            // persist SUCCESSFUL import statement record
+                            getImportService().importStatement(emailAddress, accountIdentifier, tempPdfFile, ImportStatus.PENDING);
+
+                        } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
+                            System.err.println("Error parsing statement file - flagging as import failure");
+                            // persist FAILED import statement record
+                            getImportService().importStatement(emailAddress, null, tempPdfFile, ImportStatus.ERROR);
                         }
+                    } else if (fileAttachment != null) {
+                        System.err.println("Unsupported file fileAttachment " + fileAttachment + " - skipping ...");
                     }
                 }
-            } catch (IOException e) {
-                throw new MessagingException(e.getMessage(), e);
-            } catch (ImportException e) {
-                throw new MessagingException(e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ImportService getImportService() {
+        return importService;
     }
 
     /**
@@ -101,8 +134,8 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
      *
      * @return
      */
-    public ImportService getImportService() {
-        return importService;
+    public UserService getUserService() {
+        return userService;
     }
 
     /**
@@ -117,8 +150,40 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
      *
      * @return
      */
-    public UserService getUserService() {
-        return userService;
+    public AccountService getAccountService() {
+        return accountService;
+    }
+
+    /**
+     *
+     * @param accountService
+     */
+    public void setAccountService(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public StatementBuilder getStatementBuilder() {
+        return statementBuilder;
+    }
+
+    /**
+     *
+     * @param statementBuilder
+     */
+    public void setStatementBuilder(StatementBuilder statementBuilder) {
+        this.statementBuilder = statementBuilder;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public MailboxReader getMailboxReader() {
+        return mailboxReader;
     }
 
     /**
@@ -131,9 +196,10 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
 
     /**
      *
+     * @return
      */
-    public MailboxReader getMailboxReader() {
-        return mailboxReader;
+    public PDFExtractor getPdfExtractor() {
+        return pdfExtractor;
     }
 
     /**
@@ -143,15 +209,6 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
     public void setPdfExtractor(PDFExtractor pdfExtractor) {
         this.pdfExtractor = pdfExtractor;
     }
-
-    /**
-     *
-     * @return
-     */
-    public PDFExtractor getPdfExtractor() {
-        return pdfExtractor;
-    }
-
 }
 
 

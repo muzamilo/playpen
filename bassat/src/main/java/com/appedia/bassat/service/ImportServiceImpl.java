@@ -1,15 +1,18 @@
 package com.appedia.bassat.service;
 
 import com.appedia.bassat.common.CompressionUtil;
-import com.appedia.bassat.common.HashUtil;
 import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.persistence.ImportedStatementMapper;
+import org.apache.commons.io.FileUtils;
+import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -54,25 +57,26 @@ public class ImportServiceImpl implements ImportService {
      *
      * @param userEmail
      * @param accountNumber
-     * @param fileData
+     * @param pdfFile
      * @param status
      * @throws ImportException
      */
     @Transactional
-    public void importStatement(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
+    public void importStatement(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException {
 
-        if (userEmail == null || fileData == null) {
+        if (userEmail == null || pdfFile == null) {
             throw new IllegalArgumentException("userEmail and statementPdfFile are required");
         }
 
         ImportedStatement statement;
         try {
+            byte[] fileData = IOUtils.toByteArray(new FileInputStream(pdfFile));
             if (enableCompression) {
                 System.out.println("#### COMPRESSING DATA ####");
                 fileData = CompressionUtil.compress(fileData);
                 System.out.println("File size is now " + fileData.length + " bytes");
             }
-            String fileHashKey = HashUtil.hash(new String(fileData), "SHA1");
+            String fileHashKey = Long.toHexString(FileUtils.checksumCRC32(pdfFile));
 
             statement = new ImportedStatement();
             statement.setPdfFileData(fileData);

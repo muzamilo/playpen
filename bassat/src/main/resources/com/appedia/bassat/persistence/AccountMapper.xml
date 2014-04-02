@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.appedia.bassat.persistence.AccountMapper">
+
+    <cache/>
+
+    <select id="getUserAccounts" parameterType="long" resultType="Account">
+        SELECT account_id as accountId,
+               type,
+               identifier
+        FROM account
+        WHERE user_id=#{userId}
+    </select>
+
+</mapper>
+
+
+

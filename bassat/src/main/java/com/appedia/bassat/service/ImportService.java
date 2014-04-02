@@ -28,10 +28,10 @@ public interface ImportService {
      *
      * @param userEmail
      * @param accountNumber
-     * @param fileData
+     * @param pdfFile
      * @param status
      * @throws ImportException
      */
-    void importStatement(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
+    void importStatement(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException;
 
 }

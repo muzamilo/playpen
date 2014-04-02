@@ -1,6 +1,8 @@
 package com.appedia.bassat.service;
 
-import java.util.Vector;
+import com.appedia.bassat.domain.User;
+import com.appedia.bassat.persistence.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -8,15 +10,16 @@ import java.util.Vector;
  */
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private UserMapper userMapper;
+
     /**
      *
      * @param emailAddress
      * @return
      */
     @Override
-    public boolean verifyRegisteredUser(String emailAddress) {
-        Vector v = new Vector();
-        v.retainAll()
-        return false;
+    public User getUserByEmail(String emailAddress) {
+        return userMapper.getUserByEmail(emailAddress);
     }
 }

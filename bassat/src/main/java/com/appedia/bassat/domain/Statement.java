@@ -1,56 +1,27 @@
 package com.appedia.bassat.domain;
 
-import java.util.Date;
+import java.io.Serializable;
 
 /**
  *
  * @author Muz Omar
  */
-public class Statement {
+public class Statement implements Serializable {
 
-    private String reference;
-    private StatementFrequency frequency;
-    private Date fromDate;
-    private Date toDate;
-    private String accountNumber;
+    private StatementHeader header;
+    Transaction[] transactions;
 
-    public String getReference() {
-        return reference;
+    public Statement(StatementHeader header, Transaction[] transactions) {
+        this.header = header;
+        this.transactions = transactions;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public StatementHeader getHeader() {
+        return header;
     }
 
-    public StatementFrequency getFrequency() {
-        return frequency;
+    public Transaction[] getTransactions() {
+        return transactions;
     }
 
-    public void setFrequency(StatementFrequency frequency) {
-        this.frequency = frequency;
-    }
-
-    public Date getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public Date getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
 }

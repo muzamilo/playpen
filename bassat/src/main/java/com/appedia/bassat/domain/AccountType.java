@@ -1,25 +1,22 @@
 package com.appedia.bassat.domain;
 
 /**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/21/14
- * Time: 2:46 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Muz Omar
  */
 public enum AccountType {
 
-    TRANSACTIONAL("T"),
-    CARD("C"),
-    LOAN("L");
+    TRANSACTIONAL(1),
+    CARD(2),
+    LOAN(3);
 
-    private String type;
+    private int type;
 
-    private AccountType(String type) {
+    private AccountType(int type) {
         this.type = type;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 

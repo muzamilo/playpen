@@ -1,4 +1,4 @@
-package com.appedia.bassat.job;
+package com.appedia.bassat.job.mailintegration;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -14,6 +14,6 @@ public interface MailboxMessageHandler {
      * @param message
      * @throws MessagingException
      */
-    void onMessage(Message message) throws MessagingException;
+    void onMessage(Message message) throws Exception;
 
 }

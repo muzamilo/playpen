@@ -4,11 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/13/14
- * Time: 9:38 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Muz Omar
  */
 public class StatementHeader implements Serializable {
 
@@ -16,7 +13,7 @@ public class StatementHeader implements Serializable {
     private Date fromDate;
     private Date toDate;
     private String sourceReference;
-    private long accountNo;
+    private String accountIdentifier;
 
     public StatementHeader() {
     }
@@ -53,18 +50,18 @@ public class StatementHeader implements Serializable {
         this.sourceReference = sourceReference;
     }
 
-    public long getAccountNo() {
-        return accountNo;
+    public String getAccountIdentifier() {
+        return accountIdentifier;
     }
 
-    public void setAccountNo(long accountNo) {
-        this.accountNo = accountNo;
+    public void setAccountIdentifier(String accountIdentifier) {
+        this.accountIdentifier = accountIdentifier;
     }
 
     @Override
     public String toString() {
         return "StatementHeader{" +
-                "accountNo=" + accountNo +
+                "accountIdentifier=" + accountIdentifier +
                 ", sourceReference='" + sourceReference + '\'' +
                 ", toDate=" + toDate +
                 ", fromDate=" + fromDate +

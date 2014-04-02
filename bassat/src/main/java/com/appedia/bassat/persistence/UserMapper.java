@@ -1,4 +1,4 @@
-package com.appedia.bassat.service;
+package com.appedia.bassat.persistence;
 
 import com.appedia.bassat.domain.User;
 
@@ -6,7 +6,7 @@ import com.appedia.bassat.domain.User;
  *
  * @author Muz Omar
  */
-public interface UserService {
+public interface UserMapper {
 
     /**
      *
