@@ -5,7 +5,12 @@ package com.appedia.bassat.job.statementio;
  */
 public class ParseException extends Exception {
 
-    public ParseException(Throwable cause) {
-        super(cause);
+    public ParseException(String message) {
+        super(message);
     }
+
+    public ParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

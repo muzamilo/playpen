@@ -65,14 +65,14 @@
 
     <!-- define services -->
     <bean id="importService" class="com.appedia.bassat.service.ImportServiceImpl">
-        <property name="enableCompression" value="false"/>
+        <property name="enableCompression" value="true"/>
     </bean>
     <bean id="userService" class="com.appedia.bassat.service.UserServiceImpl"/>
     <bean id="accountService" class="com.appedia.bassat.service.AccountServiceImpl"/>
 
     <!-- define the running Import Job -->
     <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.ImportJob"/>
+        <property name="jobClass" value="com.appedia.bassat.job.StatementImportJob"/>
         <property name="jobDataAsMap">
             <map>
                 <entry key="importService" value-ref="importService"/>
@@ -91,6 +91,7 @@
         <property name="protocol" value="imaps"/>
         <property name="username" value="send2basat@gmail.com"/>
         <property name="password" value="Muzamil0"/>
+        <property name="enableMockDeletes" value="true"/>
         <property name="javaMailProperties">
             <props>
                 <prop key="mail.store.protocol">imaps</prop>

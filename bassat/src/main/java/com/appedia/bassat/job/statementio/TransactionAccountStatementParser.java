@@ -4,6 +4,7 @@ import com.appedia.bassat.domain.Statement;
 import com.appedia.bassat.domain.StatementFrequency;
 import com.appedia.bassat.domain.StatementHeader;
 import com.appedia.bassat.domain.Transaction;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -13,8 +14,11 @@ import java.util.*;
  */
 public class TransactionAccountStatementParser implements StatementParser {
 
-    private static SimpleDateFormat formatFor_ddMMMMMyyyy = new SimpleDateFormat("dd MMMMM yyyy");
-    private static SimpleDateFormat formatFor_MMddyyyy = new SimpleDateFormat("MM dd yyyy");
+    private static final String HEADER_START_LINE = "## These fees are inclusive of VAT";
+    private static final String TRANSACTION_START_LINE = "BALANCE BROUGHT FORWARD";
+
+    private static final SimpleDateFormat formatFor_ddMMMMMyyyy = new SimpleDateFormat("dd MMMMM yyyy");
+    private static final SimpleDateFormat formatFor_MMddyyyy = new SimpleDateFormat("MM dd yyyy");
 
     public enum Segment { HEADER, TRANSACTIONS }
 
@@ -31,7 +35,7 @@ public class TransactionAccountStatementParser implements StatementParser {
         for (Iterator i = lines.iterator(); i.hasNext(); ) {
             String dataline = (String) i.next();
 
-            if (dataline.contains("BALANCE BROUGHT FORWARD")) {
+            if (dataline.contains(TRANSACTION_START_LINE)) {
                 nextSegment = Segment.TRANSACTIONS;
                 if (!hasHeader) {
                     if (statementHeader.getFromDate() == null) {
@@ -57,14 +61,16 @@ public class TransactionAccountStatementParser implements StatementParser {
                         statementHeader.setToDate(formatFor_ddMMMMMyyyy.parse(dataline.substring(dataline.indexOf(" to ") + 4, dataline.length())));
                     }
                     if (dataline.contains("Account Number")) {
-                        statementHeader.setAccountIdentifier(Long.toString(Long.parseLong(dataline.substring(dataline.indexOf("Account Number") + 15).replaceAll("\\s+", ""))));
+                        statementHeader.setAccountIdentifier(dataline.substring(dataline.indexOf("Account Number") + 15).replaceAll("\\s+", "").trim());
+                        if (statementHeader.getAccountIdentifier() == null || !StringUtils.isNumeric(statementHeader.getAccountIdentifier())) {
+                            throw new ParseException("Invalid account number " + statementHeader.getAccountIdentifier());
+                        }
                     }
                 } catch (Exception e) {
-                    System.out.println("Problem parsing " + nextSegment + " : " + dataline);
-                    e.printStackTrace();
+                    throw new ParseException("Unable to parse statement header", e);
                 }
 
-            } else if (dataline.startsWith("## These fees are inclusive of VAT")) {
+            } else if (dataline.startsWith(HEADER_START_LINE)) {
                 nextSegment = Segment.HEADER;
 
             } else if (nextSegment == Segment.TRANSACTIONS) {
@@ -88,7 +94,7 @@ public class TransactionAccountStatementParser implements StatementParser {
                     lastTxDate = txDate;
                     transactionLines.add(new Transaction(txDate, description, description, amount));
                 } catch (Exception e) {
-                    throw new ParseException(e);
+                    throw new ParseException("Unable to parse transaction", e);
                 }
             }
         }

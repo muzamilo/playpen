@@ -1,7 +1,9 @@
 package com.appedia.bassat.job.mailintegration;
 
 import javax.mail.*;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  *
@@ -9,13 +11,16 @@ import java.util.Properties;
  */
 public class MailboxReader {
 
-    private final String FOLDER_INBOX = "inbox";
+    private static final String FOLDER_INBOX = "inbox";
 
     private String host;
     private String protocol;
     private String username;
     private String password;
+    private boolean enableMockDeletes;
     private Properties javaMailProperties;
+
+    private Set<String> deletedMessages = new HashSet<String>();
 
     public MailboxReader() {
     }
@@ -52,6 +57,14 @@ public class MailboxReader {
         this.password = password;
     }
 
+    public boolean isEnableMockDeletes() {
+        return enableMockDeletes;
+    }
+
+    public void setEnableMockDeletes(boolean enableMockDeletes) {
+        this.enableMockDeletes = enableMockDeletes;
+    }
+
     public Properties getJavaMailProperties() {
         return javaMailProperties;
     }
@@ -82,11 +95,13 @@ public class MailboxReader {
                     // handle messages
                     for (Message message : inbox.getMessages()) {
                         try {
-                            handler.onMessage(message);
-                            deleteMessage(message);
+                            if (canHandleMessage(message)) {
+                                handler.onMessage(message);
+                                deleteMessage(message);
+                            }
                         } catch (InvalidMessageException e) {
                             System.err.println(e.toString());
-                            //deleteMessage(message);
+                            deleteMessage(message);
                         }
                     }
                 } finally {
@@ -97,9 +112,17 @@ public class MailboxReader {
                 System.out.println("Disconnected from mailbox");
             }
         } catch (Exception e) {
-            //System.err.println(e.toString());
-            e.printStackTrace();
+            System.err.println(e.toString());
+            //e.printStackTrace();
         }
+    }
+
+    /**
+     *
+     */
+    private boolean canHandleMessage(Message message) throws MessagingException {
+        String messageId = Long.toString(message.getReceivedDate().getTime());
+        return !deletedMessages.contains(messageId);
     }
 
     /**
@@ -108,7 +131,12 @@ public class MailboxReader {
      * @throws MessagingException
      */
     private void deleteMessage(Message message) throws MessagingException {
-        message.setFlag(Flags.Flag.DELETED, true);
+        if (enableMockDeletes) {
+            String messageId = Long.toString(message.getReceivedDate().getTime());
+            deletedMessages.add(messageId);
+        } else {
+            message.setFlag(Flags.Flag.DELETED, true);
+        }
         System.out.println("Deleted message from mailbox");
     }
 
