@@ -28,7 +28,7 @@ import java.io.FileOutputStream;
 /**
  * @author muz
  */
-public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMessageHandler {
+public class StatementImportJob extends QuartzJobBean implements StatefulJob, MailboxMessageHandler {
 
     private ImportService importService;
     private UserService userService;
@@ -43,7 +43,7 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
      * @throws JobExecutionException
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("###### EXECUTING ImportJob ######");
+        System.out.println("###### EXECUTING StatementImportJob ######");
 
         getMailboxReader().processInbox(this);
 
@@ -102,7 +102,7 @@ public class ImportJob extends QuartzJobBean implements StatefulJob, MailboxMess
                             getImportService().importStatement(emailAddress, accountIdentifier, tempPdfFile, ImportStatus.PENDING);
 
                         } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
-                            System.err.println("Error parsing statement file - flagging as import failure");
+                            System.err.println("Error parsing statement file - importing as failure");
                             // persist FAILED import statement record
                             getImportService().importStatement(emailAddress, null, tempPdfFile, ImportStatus.ERROR);
                         }
