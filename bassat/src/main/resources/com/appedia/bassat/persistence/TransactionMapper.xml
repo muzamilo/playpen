@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.appedia.bassat.persistence.TransactionMapper">
+
+    <cache/>
+
+    <insert id="insertTransaction" parameterType="Transaction">
+        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, pdf_file_checksum, pdf_file_data, status)
+        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
+    </insert>
+
+</mapper>
+
+
+

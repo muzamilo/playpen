@@ -10,7 +10,7 @@ import com.appedia.bassat.job.statementio.PDFExtractor;
 import com.appedia.bassat.job.statementio.ParseException;
 import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
-import com.appedia.bassat.service.ImportService;
+import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
 import org.apache.commons.io.IOUtils;
 import org.quartz.JobExecutionContext;
@@ -30,9 +30,11 @@ import java.io.FileOutputStream;
  */
 public class StatementImportJob extends QuartzJobBean implements StatefulJob, MailboxMessageHandler {
 
-    private ImportService importService;
+    private final static String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator;
+
     private UserService userService;
     private AccountService accountService;
+    private StatementService statementService;
     private StatementBuilder statementBuilder;
     private MailboxReader mailboxReader;
     private PDFExtractor pdfExtractor;
@@ -43,11 +45,11 @@ public class StatementImportJob extends QuartzJobBean implements StatefulJob, Ma
      * @throws JobExecutionException
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("###### EXECUTING StatementImportJob ######");
+        System.out.println("###### EXECUTING Statement IMPORT JOB ######");
 
         getMailboxReader().processInbox(this);
 
-        System.out.println("#################################");
+        System.out.println("############################################");
 
     }
 
@@ -73,14 +75,13 @@ public class StatementImportJob extends QuartzJobBean implements StatefulJob, Ma
 
             } else {
                 for (int i = 0; i < nParts; i++) {
-
                     // get file attachment for this message
                     String fileAttachment = part.getBodyPart(i).getFileName();
 
                     // check if file attachment is a PDF
                     if (fileAttachment != null && fileAttachment.trim().toLowerCase().endsWith(".pdf")) {
                         System.out.println("Found fileAttachment " + fileAttachment);
-                        File tempPdfFile = new File(System.getProperty("java.io.tmpdir") + File.separator + fileAttachment);
+                        File tempPdfFile = new File(TEMP_PATH + fileAttachment);
                         IOUtils.copy(part.getBodyPart(i).getInputStream(), new FileOutputStream(tempPdfFile));
 
                         // import PDF
@@ -99,12 +100,12 @@ public class StatementImportJob extends QuartzJobBean implements StatefulJob, Ma
                             }
 
                             // persist SUCCESSFUL import statement record
-                            getImportService().importStatement(emailAddress, accountIdentifier, tempPdfFile, ImportStatus.PENDING);
+                            getStatementService().uploadStatementFile(emailAddress, accountIdentifier, tempPdfFile, ImportStatus.PENDING);
 
                         } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
                             System.err.println("Error parsing statement file - importing as failure");
                             // persist FAILED import statement record
-                            getImportService().importStatement(emailAddress, null, tempPdfFile, ImportStatus.ERROR);
+                            getStatementService().uploadStatementFile(emailAddress, null, tempPdfFile, ImportStatus.ERROR);
                         }
                     } else if (fileAttachment != null) {
                         System.err.println("Unsupported file fileAttachment " + fileAttachment + " - skipping ...");
@@ -118,16 +119,16 @@ public class StatementImportJob extends QuartzJobBean implements StatefulJob, Ma
      *
      * @return
      */
-    public ImportService getImportService() {
-        return importService;
+    public StatementService getStatementService() {
+        return statementService;
     }
 
     /**
      *
-     * @param importService
+     * @param statementService
      */
-    public void setImportService(ImportService importService) {
-        this.importService = importService;
+    public void setStatementService(StatementService statementService) {
+        this.statementService = statementService;
     }
 
     /**

@@ -24,6 +24,6 @@ public interface AccountService {
      * @param identifier
      * @return
      */
-    public boolean hasAccount(User user, String identifier);
+    boolean hasAccount(User user, String identifier);
 
 }

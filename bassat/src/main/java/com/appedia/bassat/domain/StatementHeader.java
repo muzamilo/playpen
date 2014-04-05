@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class StatementHeader implements Serializable {
 
+    private long statementHeaderId;
     private StatementFrequency frequency;
     private Date fromDate;
     private Date toDate;
@@ -56,6 +57,14 @@ public class StatementHeader implements Serializable {
 
     public void setAccountIdentifier(String accountIdentifier) {
         this.accountIdentifier = accountIdentifier;
+    }
+
+    public long getStatementHeaderId() {
+        return statementHeaderId;
+    }
+
+    public void setStatementHeaderId(long statementHeaderId) {
+        this.statementHeaderId = statementHeaderId;
     }
 
     @Override

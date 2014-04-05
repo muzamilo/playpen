@@ -3,14 +3,12 @@ package com.appedia.bassat.domain;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: muz
- * Date: 3/13/14
- * Time: 9:43 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * @author Muz Omar
  */
 public class Transaction {
 
+    private long statementHeaderId;
     private Date txDateTime;
     private String rawDescription;
     private String indexedDescription;
@@ -53,5 +51,13 @@ public class Transaction {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public long getStatementHeaderId() {
+        return statementHeaderId;
+    }
+
+    public void setStatementHeaderId(long statementHeaderId) {
+        this.statementHeaderId = statementHeaderId;
     }
 }

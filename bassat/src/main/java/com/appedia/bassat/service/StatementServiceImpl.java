@@ -1,14 +1,16 @@
 package com.appedia.bassat.service;
 
 import com.appedia.bassat.common.CompressionUtil;
-import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.ImportStatus;
+import com.appedia.bassat.domain.ImportedStatement;
+import com.appedia.bassat.domain.Statement;
 import com.appedia.bassat.persistence.ImportedStatementMapper;
+import com.appedia.bassat.persistence.StatementMapper;
+import com.appedia.bassat.persistence.TransactionMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -17,25 +19,20 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  *
  * @author Muz Omar
  */
-@Service
-public class ImportServiceImpl implements ImportService {
+public class StatementServiceImpl implements StatementService {
 
     @Autowired
+    private StatementMapper statementMapper;
+    @Autowired
+    private TransactionMapper transactionMapper;
+    @Autowired
     private ImportedStatementMapper importedStatementMapper;
-    private boolean enableCompression;
 
-    /**
-     *
-     * @param enableCompression
-     */
-    public void setEnableCompression(boolean enableCompression) {
-        this.enableCompression = enableCompression;
-    }
+    private boolean enableCompression;
 
     /**
      *
@@ -55,6 +52,14 @@ public class ImportServiceImpl implements ImportService {
 
     /**
      *
+     * @param statement
+     */
+    @Transactional
+    public void insertStatement(Statement statement) {
+    }
+
+    /**
+     *
      * @param userEmail
      * @param accountNumber
      * @param pdfFile
@@ -62,7 +67,7 @@ public class ImportServiceImpl implements ImportService {
      * @throws ImportException
      */
     @Transactional
-    public void importStatement(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException {
+    public void uploadStatementFile(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException {
 
         if (userEmail == null || pdfFile == null) {
             throw new IllegalArgumentException("userEmail and statementPdfFile are required");
@@ -96,5 +101,12 @@ public class ImportServiceImpl implements ImportService {
         }
     }
 
-}
+    /**
+     *
+     * @param enableCompression
+     */
+    public void setEnableCompression(boolean enableCompression) {
+        this.enableCompression = enableCompression;
+    }
 
+}
