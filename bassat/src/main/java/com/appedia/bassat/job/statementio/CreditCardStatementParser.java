@@ -1,6 +1,6 @@
 package com.appedia.bassat.job.statementio;
 
-import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public class CreditCardStatementParser implements StatementParser {
 
     @Override
-    public Statement parse(List<String> lines) throws ParseException {
+    public StatementComposite parse(List<String> lines) throws ParseException {
         throw new UnsupportedOperationException();
     }
 }

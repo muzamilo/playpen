@@ -1,6 +1,7 @@
 package com.appedia.bassat.persistence;
 
-import com.appedia.bassat.domain.StatementHeader;
+import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.Transaction;
 
 /**
  *
@@ -10,8 +11,14 @@ public interface StatementMapper {
 
     /**
      *
-     * @param header
+     * @param statement
      */
-    void insertStatementHeader(StatementHeader header);
+    void insertStatement(Statement statement);
+
+    /**
+     *
+     * @param transaction
+     */
+    void insertTransaction(Transaction transaction);
 
 }

@@ -2,6 +2,7 @@ package com.appedia.bassat.job;
 
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 import com.appedia.bassat.domain.User;
 import com.appedia.bassat.job.mailintegration.InvalidMessageException;
 import com.appedia.bassat.job.mailintegration.MailboxMessageHandler;
@@ -28,7 +29,7 @@ import java.io.FileOutputStream;
 /**
  * @author muz
  */
-public class StatementImportJob extends QuartzJobBean implements StatefulJob, MailboxMessageHandler {
+public class StatementImportJob extends QuartzJobBean implements MailboxMessageHandler {
 
     private final static String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator;
 
@@ -93,9 +94,9 @@ public class StatementImportJob extends QuartzJobBean implements StatefulJob, Ma
                             System.out.println("Extracted PDF file " + tempExtractedPdfFile.getAbsolutePath());
 
                             // validate statement
-                            Statement statement = getStatementBuilder().build(tempExtractedPdfFile);
-                            String accountIdentifier = statement.getHeader().getAccountIdentifier();
-                            if (!getAccountService().hasAccount(user, accountIdentifier)) {
+                            StatementComposite statementComposite = getStatementBuilder().build(tempExtractedPdfFile);
+                            String accountIdentifier = statementComposite.getStatement().getAccountIdentifier();
+                            if (!getAccountService().checkUserHasAccount(user, accountIdentifier)) {
                                 throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
                             }
 

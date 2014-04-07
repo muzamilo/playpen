@@ -3,7 +3,7 @@ package com.appedia.bassat.service;
 import com.appedia.bassat.common.CompressionUtil;
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.ImportedStatement;
-import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 import com.appedia.bassat.persistence.ImportedStatementMapper;
 import com.appedia.bassat.persistence.StatementMapper;
 import com.appedia.bassat.persistence.TransactionMapper;
@@ -52,10 +52,19 @@ public class StatementServiceImpl implements StatementService {
 
     /**
      *
-     * @param statement
+     * @param importedStatementId
+     * @param status
+     */
+    public void updateImportedStatementStatus(long importedStatementId, ImportStatus status) {
+        importedStatementMapper.setImportedStatementStatus(importedStatementId, status);
+    }
+
+    /**
+     *
+     * @param statementComposite
      */
     @Transactional
-    public void insertStatement(Statement statement) {
+    public void insertStatement(StatementComposite statementComposite) {
     }
 
     /**
@@ -87,7 +96,7 @@ public class StatementServiceImpl implements StatementService {
             statement.setPdfFileData(fileData);
             statement.setLinkAccountNumber(accountNumber);
             statement.setLinkUserEmail(userEmail);
-            statement.setPdfFileHashKey(fileHashKey);
+            statement.setPdfFileChecksum(fileHashKey);
             statement.setStatus(status);
             statement.setImportDateTime(new Date());
         } catch (IOException e) {

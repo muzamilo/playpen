@@ -112,8 +112,8 @@ public class MailboxReader {
                 System.out.println("Disconnected from mailbox");
             }
         } catch (Exception e) {
-            System.err.println(e.toString());
-            //e.printStackTrace();
+            //System.err.println(e.toString());
+            e.printStackTrace();
         }
     }
 

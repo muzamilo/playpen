@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class Transaction {
 
-    private long statementHeaderId;
+    private long statementId;
     private Date txDateTime;
     private String rawDescription;
     private String indexedDescription;
@@ -53,11 +53,11 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public long getStatementHeaderId() {
-        return statementHeaderId;
+    public long getStatementId() {
+        return statementId;
     }
 
-    public void setStatementHeaderId(long statementHeaderId) {
-        this.statementHeaderId = statementHeaderId;
+    public void setStatementId(long statementId) {
+        this.statementId = statementId;
     }
 }

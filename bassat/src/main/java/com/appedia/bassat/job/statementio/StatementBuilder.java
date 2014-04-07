@@ -1,12 +1,9 @@
 package com.appedia.bassat.job.statementio;
 
-import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class StatementBuilder {
      * @param pdfTxtFile
      * @return
      */
-    public Statement build(File pdfTxtFile) throws IOException, ParseException {
+    public StatementComposite build(File pdfTxtFile) throws IOException, ParseException {
 
         List<String> data = loadFile(pdfTxtFile);
 
@@ -42,6 +39,21 @@ public class StatementBuilder {
 
         return parser.parse(data);
     }
+
+    /**
+     *
+     * @param istream
+     * @return
+     */
+    public StatementComposite build(InputStream istream) throws IOException, ParseException {
+
+        List<String> data = loadFile(istream);
+
+        StatementParser parser = getStatementParser(data);
+
+        return parser.parse(data);
+    }
+
 
     /**
      *
@@ -65,6 +77,22 @@ public class StatementBuilder {
     protected final List<String> loadFile(File statementFile) throws IOException {
         List<String> data = new ArrayList<String>();
         BufferedReader br = new BufferedReader(new FileReader(statementFile));
+        for (String line; (line = br.readLine()) != null; ) {
+            //System.out.println(line);
+            data.add(line);
+        }
+        return data;
+    }
+
+    /**
+     *
+     * @param istream
+     * @return  List of String lines
+     * @throws java.io.IOException
+     */
+    protected final List<String> loadFile(InputStream istream) throws IOException {
+        List<String> data = new ArrayList<String>();
+        BufferedReader br = new BufferedReader(new InputStreamReader(istream));
         for (String line; (line = br.readLine()) != null; ) {
             //System.out.println(line);
             data.add(line);

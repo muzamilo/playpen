@@ -1,6 +1,7 @@
 package com.appedia.bassat.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ public class ImportedStatement implements Serializable {
     private Date importDateTime;
     private String linkUserEmail;
     private String linkAccountNumber;
-    private String pdfFileHashKey;
+    private String pdfFileChecksum;
     private byte[] pdfFileData;
     private ImportStatus status;
 
@@ -49,12 +50,12 @@ public class ImportedStatement implements Serializable {
         this.linkAccountNumber = linkAccountNumber;
     }
 
-    public String getPdfFileHashKey() {
-        return pdfFileHashKey;
+    public String getPdfFileChecksum() {
+        return pdfFileChecksum;
     }
 
-    public void setPdfFileHashKey(String pdfFileHashKey) {
-        this.pdfFileHashKey = pdfFileHashKey;
+    public void setPdfFileChecksum(String pdfFileChecksum) {
+        this.pdfFileChecksum = pdfFileChecksum;
     }
 
     public byte[] getPdfFileData() {
@@ -76,11 +77,12 @@ public class ImportedStatement implements Serializable {
     @Override
     public String toString() {
         return "ImportedStatement{" +
-                "importDateTime=" + importDateTime +
+                "importStatementId=" + importStatementId +
+                ", importDateTime=" + importDateTime +
                 ", linkUserEmail='" + linkUserEmail + '\'' +
                 ", linkAccountNumber='" + linkAccountNumber + '\'' +
-                ", pdfFileHashKey='" + pdfFileHashKey + '\'' +
-                ", pdfFileData.length='" + (pdfFileData.length) + '\'' +
+                ", pdfFileChecksum='" + pdfFileChecksum + '\'' +
+                ", pdfFileData=" + Arrays.toString(pdfFileData) +
                 ", status=" + status +
                 '}';
     }

@@ -6,12 +6,16 @@
 
     <cache/>
 
-    <insert id="insertStatementHeader" parameterType="StatementHeader">
-        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, pdf_file_checksum, pdf_file_data, status)
-        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
+    <insert id="insertStatement" parameterType="Statement">
+        INSERT INTO statement (account_identifier, source_ref, frequency, from_date, to_date)
+        VALUES (#{accountIdentifier}, #{sourceRef}, #{frequency}, #{fromDate}, #{toDate})
+    </insert>
+
+    <insert id="insertTransaction" parameterType="Transaction">
+        INSERT INTO statement (statement_id, tx_datetime, raw_desc, indexed_desc, account)
+        VALUES (#{statementId}, #{txDateTime}, #{rawDescription}, #{indexedDescription}, #{amount})
     </insert>
 
 </mapper>
-
 
 

@@ -2,7 +2,7 @@ package com.appedia.bassat.service;
 
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.ImportedStatement;
-import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 
 import java.io.File;
 import java.util.List;
@@ -27,9 +27,16 @@ public interface StatementService {
 
     /**
      *
-     * @param statement
+     * @param importedStatementId
+     * @param status
      */
-    void insertStatement(Statement statement);
+    void updateImportedStatementStatus(long importedStatementId, ImportStatus status);
+
+    /**
+     *
+     * @param statementComposite
+     */
+    void insertStatement(StatementComposite statementComposite);
 
     /**
      *

@@ -1,6 +1,7 @@
 package com.appedia.bassat.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -8,20 +9,73 @@ import java.io.Serializable;
  */
 public class Statement implements Serializable {
 
-    private StatementHeader header;
-    Transaction[] transactions;
+    private long statementId;
+    private StatementFrequency frequency;
+    private Date fromDate;
+    private Date toDate;
+    private String sourceReference;
+    private String accountIdentifier;
 
-    public Statement(StatementHeader header, Transaction[] transactions) {
-        this.header = header;
-        this.transactions = transactions;
+    public Statement() {
     }
 
-    public StatementHeader getHeader() {
-        return header;
+    public StatementFrequency getFrequency() {
+        return frequency;
     }
 
-    public Transaction[] getTransactions() {
-        return transactions;
+    public void setFrequency(StatementFrequency frequency) {
+        this.frequency = frequency;
     }
 
+    public Date getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
+
+    public String getSourceReference() {
+        return sourceReference;
+    }
+
+    public void setSourceReference(String sourceReference) {
+        this.sourceReference = sourceReference;
+    }
+
+    public String getAccountIdentifier() {
+        return accountIdentifier;
+    }
+
+    public void setAccountIdentifier(String accountIdentifier) {
+        this.accountIdentifier = accountIdentifier;
+    }
+
+    public long getStatementId() {
+        return statementId;
+    }
+
+    public void setStatementId(long statementId) {
+        this.statementId = statementId;
+    }
+
+    @Override
+    public String toString() {
+        return "Statement{" +
+                "statementId=" + statementId +
+                ", frequency=" + frequency +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                ", sourceReference='" + sourceReference + '\'' +
+                ", accountIdentifier='" + accountIdentifier + '\'' +
+                '}';
+    }
 }

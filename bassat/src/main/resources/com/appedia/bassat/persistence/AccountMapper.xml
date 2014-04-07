@@ -8,6 +8,7 @@
 
     <select id="getUserAccounts" parameterType="long" resultType="Account">
         SELECT account_id as accountId,
+               user_id as userId,
                type,
                identifier
         FROM account

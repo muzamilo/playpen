@@ -22,7 +22,10 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     public List<Account> getUserAccounts(long userId) {
-        return accountMapper.getUserAccounts(userId);
+        System.out.println("Find user accounts for " + userId);
+        List<Account> results = accountMapper.getUserAccounts(userId);
+        System.out.println("Found " + results.size() + " results");
+        return results;
     }
 
     /**
@@ -31,9 +34,16 @@ public class AccountServiceImpl implements AccountService {
      * @param identifier
      * @return
      */
-    public boolean hasAccount(User user, String identifier) {
+    public boolean checkUserHasAccount(User user, String identifier) {
         List<Account> accounts = getUserAccounts(user.getUserId());
-        return accounts != null && accounts.contains(identifier);
+        if (accounts != null) {
+            for (Account account : accounts) {
+                if (account.getIdentifier().equals(identifier)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

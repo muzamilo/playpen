@@ -45,20 +45,4 @@ public class Account implements Serializable {
         this.identifier = identifier;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Account account = (Account) o;
-
-        if (accountId != account.accountId) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return (int) (accountId ^ (accountId >>> 32));
-    }
 }

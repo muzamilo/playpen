@@ -1,6 +1,6 @@
 package com.appedia.bassat.job.statementio;
 
-import com.appedia.bassat.domain.Statement;
+import com.appedia.bassat.domain.StatementComposite;
 
 import java.util.List;
 
@@ -14,6 +14,6 @@ public interface StatementParser {
      * @param lines
      * @throws ParseException
      */
-    Statement parse(List<String> lines) throws ParseException;
+    StatementComposite parse(List<String> lines) throws ParseException;
 
 }

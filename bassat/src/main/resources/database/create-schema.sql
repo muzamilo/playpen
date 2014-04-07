@@ -37,9 +37,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `UNQ_USER_EMAIL` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-insert into user(user_id, id_number, title, first_name, surname, email, password) values (1, '7706035097083', 'Mr', 'Muzamil', 'Omar', 'muzamilo@gmail.com', 'Muzamil0');
-commit;
-
 --
 -- Table structure for table `account`
 --
@@ -50,8 +47,42 @@ CREATE TABLE IF NOT EXISTS `account` (
   `type` numeric(1) NOT NULL,
   `identifier` varchar(20) NOT NULL,
   PRIMARY KEY  (`account_id`),
-  UNIQUE KEY `UNQ_USER_EMAIL` (`identifier`)
+  UNIQUE KEY `UNQ_ACC_IDENTIFIER` (`identifier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Table structure for table `statement`
+--
+DROP TABLE IF EXISTS `statement`;
+CREATE TABLE IF NOT EXISTS `statement` (
+  `statement_id` int(10) unsigned NOT NULL auto_increment,
+  `account_identifier` varchar(20) NOT NULL,
+  `source_ref` varchar(20) NOT NULL,
+  `frequency` varchar(10) NOT NULL,
+  `from_date` datetime NOT NULL,
+  `to_date` datetime NOT NULL,
+  PRIMARY KEY  (`statement_id`),
+  UNIQUE KEY `UNQ_SOURCE_REF` (`source_ref`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Table structure for table `transaction`
+--
+DROP TABLE IF EXISTS `transaction`;
+CREATE TABLE IF NOT EXISTS `transaction` (
+  `transaction_id` int(10) unsigned NOT NULL auto_increment,
+  `statement_id` int(10) NOT NULL,
+  `tx_datetime` datetime NOT NULL,
+  `raw_desc` varchar(50) NOT NULL,
+  `indexed_desc` varchar(50) NOT NULL,
+  `amount` decimal(13,2) NOT NULL,
+  PRIMARY KEY  (`transaction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- SETUP TEST DATA
+insert into user(user_id, id_number, title, first_name, surname, email, password) values (1, '7706035097083', 'Mr', 'Muzamil', 'Omar', 'muzamilo@gmail.com', 'Muzamil0');
 insert into account(account_id, user_id, type, identifier) values (1, 1, 1, '071153322');
 commit;
+
