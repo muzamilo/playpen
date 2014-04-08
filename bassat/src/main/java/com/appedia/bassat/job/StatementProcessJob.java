@@ -8,14 +8,10 @@ import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
-import org.apache.commons.io.IOUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -40,15 +36,12 @@ public class StatementProcessJob extends QuartzJobBean {
         List<ImportedStatement> pendingStatements = getStatementService().getStatementsToImport();
         for (ImportedStatement importedStatement : pendingStatements) {
             try {
-                try {
-                    StatementComposite statementComposite = getStatementBuilder().build(
-                                                    new ByteArrayInputStream(importedStatement.getPdfFileData()));
-                    System.out.println(statementComposite.getStatement().toString());
-                } catch (ParseException e) {
-                    System.err.println("Error parsing statement file - updating import as failure");
-                    // persist FAILED import statement record
-                    getStatementService().updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.ERROR);
-                }
+                StatementComposite statementComposite = getStatementBuilder().build(importedStatement.getPdfFileData());
+                System.out.println(statementComposite.getStatement().toString());
+            } catch (ParseException e) {
+                System.err.println("Error parsing statement file - updating import as failure");
+                // persist FAILED import statement record
+                getStatementService().updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.ERROR);
             } catch (IOException e) {
                 e.printStackTrace();
             }

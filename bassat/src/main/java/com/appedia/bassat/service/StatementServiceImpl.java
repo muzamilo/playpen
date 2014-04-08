@@ -1,6 +1,7 @@
 package com.appedia.bassat.service;
 
 import com.appedia.bassat.common.CompressionUtil;
+import com.appedia.bassat.common.HashUtil;
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.StatementComposite;
@@ -56,7 +57,7 @@ public class StatementServiceImpl implements StatementService {
      * @param status
      */
     public void updateImportedStatementStatus(long importedStatementId, ImportStatus status) {
-        importedStatementMapper.setImportedStatementStatus(importedStatementId, status);
+        importedStatementMapper.updateImportedStatementStatus(importedStatementId, status);
     }
 
     /**
@@ -71,26 +72,25 @@ public class StatementServiceImpl implements StatementService {
      *
      * @param userEmail
      * @param accountNumber
-     * @param pdfFile
+     * @param fileData
      * @param status
      * @throws ImportException
      */
     @Transactional
-    public void uploadStatementFile(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException {
+    public void uploadStatementFile(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
 
-        if (userEmail == null || pdfFile == null) {
+        if (userEmail == null || fileData == null) {
             throw new IllegalArgumentException("userEmail and statementPdfFile are required");
         }
 
         ImportedStatement statement;
         try {
-            byte[] fileData = IOUtils.toByteArray(new FileInputStream(pdfFile));
             if (enableCompression) {
                 System.out.println("#### COMPRESSING DATA ####");
                 fileData = CompressionUtil.compress(fileData);
                 System.out.println("File size is now " + fileData.length + " bytes");
             }
-            String fileHashKey = Long.toHexString(FileUtils.checksumCRC32(pdfFile));
+            String fileHashKey = HashUtil.hash(fileData.toString(), "SHA1");
 
             statement = new ImportedStatement();
             statement.setPdfFileData(fileData);

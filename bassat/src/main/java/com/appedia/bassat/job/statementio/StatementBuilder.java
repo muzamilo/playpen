@@ -22,34 +22,22 @@ public class StatementBuilder {
 
     /**
      *
-     */
-    public StatementBuilder() {
-    }
-
-    /**
-     *
-     * @param pdfTxtFile
+     * @param fileData
      * @return
      */
-    public StatementComposite build(File pdfTxtFile) throws IOException, ParseException {
+    public StatementComposite build(byte[] fileData) throws IOException, ParseException {
 
-        List<String> data = loadFile(pdfTxtFile);
-
-        StatementParser parser = getStatementParser(data);
-
-        return parser.parse(data);
-    }
-
-    /**
-     *
-     * @param istream
-     * @return
-     */
-    public StatementComposite build(InputStream istream) throws IOException, ParseException {
-
-        List<String> data = loadFile(istream);
+        List<String> data = new ArrayList<String>();
+        BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(fileData)));
+        for (String line; (line = br.readLine()) != null; ) {
+            //System.out.println(line);
+            data.add(line);
+        }
 
         StatementParser parser = getStatementParser(data);
+        if (parser == null) {
+            throw new IllegalArgumentException("No StatementParser was set");
+        }
 
         return parser.parse(data);
     }
@@ -66,38 +54,6 @@ public class StatementBuilder {
         } else {
             return transactionAccountStatementParser;
         }
-    }
-
-    /**
-     *
-     * @param statementFile
-     * @return  List of String lines
-     * @throws java.io.IOException
-     */
-    protected final List<String> loadFile(File statementFile) throws IOException {
-        List<String> data = new ArrayList<String>();
-        BufferedReader br = new BufferedReader(new FileReader(statementFile));
-        for (String line; (line = br.readLine()) != null; ) {
-            //System.out.println(line);
-            data.add(line);
-        }
-        return data;
-    }
-
-    /**
-     *
-     * @param istream
-     * @return  List of String lines
-     * @throws java.io.IOException
-     */
-    protected final List<String> loadFile(InputStream istream) throws IOException {
-        List<String> data = new ArrayList<String>();
-        BufferedReader br = new BufferedReader(new InputStreamReader(istream));
-        for (String line; (line = br.readLine()) != null; ) {
-            //System.out.println(line);
-            data.add(line);
-        }
-        return data;
     }
 
     public StatementParser getTransactionAccountStatementParser() {

@@ -42,10 +42,10 @@ public interface StatementService {
      *
      * @param userEmail
      * @param accountNumber
-     * @param pdfFile
+     * @param fileData
      * @param status
      * @throws ImportException
      */
-    void uploadStatementFile(String userEmail, String accountNumber, File pdfFile, ImportStatus status) throws ImportException;
+    void uploadStatementFile(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
 
 }

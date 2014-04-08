@@ -1,7 +1,6 @@
 package com.appedia.bassat.job;
 
 import com.appedia.bassat.domain.ImportStatus;
-import com.appedia.bassat.domain.Statement;
 import com.appedia.bassat.domain.StatementComposite;
 import com.appedia.bassat.domain.User;
 import com.appedia.bassat.job.mailintegration.InvalidMessageException;
@@ -13,10 +12,8 @@ import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
-import org.apache.commons.io.IOUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.StatefulJob;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import javax.mail.Message;
@@ -24,7 +21,7 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.InputStream;
 
 /**
  * @author muz
@@ -78,35 +75,33 @@ public class StatementImportJob extends QuartzJobBean implements MailboxMessageH
                 for (int i = 0; i < nParts; i++) {
                     // get file attachment for this message
                     String fileAttachment = part.getBodyPart(i).getFileName();
+                    InputStream fileDataStream = part.getBodyPart(i).getInputStream();
 
                     // check if file attachment is a PDF
                     if (fileAttachment != null && fileAttachment.trim().toLowerCase().endsWith(".pdf")) {
                         System.out.println("Found fileAttachment " + fileAttachment);
-                        File tempPdfFile = new File(TEMP_PATH + fileAttachment);
-                        IOUtils.copy(part.getBodyPart(i).getInputStream(), new FileOutputStream(tempPdfFile));
+
+                        // extractToText PDF
+                        System.out.println("Extracting fileAttachment " + fileAttachment);
+                        byte[] fileData = getPdfExtractor().extractToText(fileDataStream, user.getIdNumber());
 
                         // import PDF
-                        System.out.println("Importing fileAttachment " + tempPdfFile.getAbsolutePath() + " (" + tempPdfFile.length() + " bytes)");
+                        System.out.println("Importing fileAttachment " + fileAttachment + " (" + fileData.length + " bytes)");
                         try {
-
-                            // extract PDF
-                            File tempExtractedPdfFile = getPdfExtractor().extract(tempPdfFile, user.getIdNumber());
-                            System.out.println("Extracted PDF file " + tempExtractedPdfFile.getAbsolutePath());
-
                             // validate statement
-                            StatementComposite statementComposite = getStatementBuilder().build(tempExtractedPdfFile);
+                            StatementComposite statementComposite = getStatementBuilder().build(fileData);
                             String accountIdentifier = statementComposite.getStatement().getAccountIdentifier();
                             if (!getAccountService().checkUserHasAccount(user, accountIdentifier)) {
                                 throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
                             }
 
                             // persist SUCCESSFUL import statement record
-                            getStatementService().uploadStatementFile(emailAddress, accountIdentifier, tempPdfFile, ImportStatus.PENDING);
+                            getStatementService().uploadStatementFile(emailAddress, accountIdentifier, fileData, ImportStatus.PENDING);
 
                         } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
                             System.err.println("Error parsing statement file - importing as failure");
                             // persist FAILED import statement record
-                            getStatementService().uploadStatementFile(emailAddress, null, tempPdfFile, ImportStatus.ERROR);
+                            getStatementService().uploadStatementFile(emailAddress, null, fileData, ImportStatus.ERROR);
                         }
                     } else if (fileAttachment != null) {
                         System.err.println("Unsupported file fileAttachment " + fileAttachment + " - skipping ...");

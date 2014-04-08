@@ -60,7 +60,7 @@
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <!--<ref bean="importJobTrigger"/>-->
+                <ref bean="importJobTrigger"/>
                 <ref bean="processJobTrigger"/>
             </list>
         </property>
@@ -116,10 +116,7 @@
     </bean>
 
     <!-- define the PDFExtractor -->
-    <bean id="pdfExtractor" class="com.appedia.bassat.job.statementio.PDFExtractor">
-        <property name="debug" value="false"/>
-        <property name="maxSupportedFileSize" value="65535"/>
-    </bean>
+    <bean id="pdfExtractor" class="com.appedia.bassat.job.statementio.PDFExtractor" />
 
     <!-- define the Statement Builder -->
     <bean id="statementBuilder" class="com.appedia.bassat.job.statementio.StatementBuilder">
