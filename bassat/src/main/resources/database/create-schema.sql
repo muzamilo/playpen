@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `statement` (
   `from_date` datetime NOT NULL,
   `to_date` datetime NOT NULL,
   PRIMARY KEY  (`statement_id`),
-  UNIQUE KEY `UNQ_SOURCE_REF` (`source_ref`)
+  UNIQUE KEY `UNQ_SOURCE_REF` (`account_identifier`, `source_ref`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -77,7 +77,8 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `raw_desc` varchar(50) NOT NULL,
   `indexed_desc` varchar(50) NOT NULL,
   `amount` decimal(13,2) NOT NULL,
-  PRIMARY KEY  (`transaction_id`)
+  PRIMARY KEY  (`transaction_id`),
+  UNIQUE KEY `UNQ_TRANSACTION` (`tx_datetime`, `raw_desc`, `amount`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

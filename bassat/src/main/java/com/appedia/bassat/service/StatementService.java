@@ -4,8 +4,6 @@ import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.StatementComposite;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -31,7 +29,15 @@ public interface StatementService {
      *
      * @param statementComposite
      */
-    void insertStatement(StatementComposite statementComposite, ImportedStatement importedStatement);
+    void insertStatement(StatementComposite statementComposite) throws CreateStatementException;
+
+    /**
+     *
+     * @param importedStatement
+     * @param statementComposite
+     * @throws CreateStatementException
+     */
+    void processImportedStatement(ImportedStatement importedStatement, StatementComposite statementComposite) throws CreateStatementException;
 
     /**
      *
@@ -39,9 +45,8 @@ public interface StatementService {
      * @param accountNumber
      * @param fileData
      * @param status
-     * @throws ImportException
+     * @throws CreateStatementException
      */
-    void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
-
+    void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws CreateStatementException;
 
 }

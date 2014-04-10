@@ -8,7 +8,7 @@ public enum ImportStatus {
 
     PENDING(0),
     ERROR(-1),
-    SUCCESS(1);
+    PROCESSED(1);
 
     private int statusCode;
 

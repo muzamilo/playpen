@@ -4,14 +4,14 @@ package com.appedia.bassat.service;
  *
  * @author Muz Omar
  */
-public class ImportException extends Exception {
+public class CreateStatementException extends Exception {
 
     /**
      *
      * @param message
      * @param cause
      */
-    public ImportException(String message, Throwable cause) {
+    public CreateStatementException(String message, Throwable cause) {
         super(message, cause);
     }
 }

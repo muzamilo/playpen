@@ -53,20 +53,35 @@ public class StatementServiceImpl implements StatementService {
     /**
      *
      * @param statementComposite
-     * @param importedStatement
      */
     @Transactional
-    public void insertStatement(StatementComposite statementComposite, ImportedStatement importedStatement) {
+    public void insertStatement(StatementComposite statementComposite) throws CreateStatementException {
         Statement statement = statementComposite.getStatement();
-        statement.setImportedStatementId(importedStatement.getImportStatementId());
-        statementMapper.insertStatement(statement);
+        try {
+            statementMapper.insertStatement(statement);
 
-        List<Transaction> transactions = Arrays.asList(statementComposite.getTransactions());
-        for (Transaction transaction : transactions) {
-            transactionMapper.insertTransaction(transaction);
+            List<Transaction> transactions = Arrays.asList(statementComposite.getTransactions());
+            for (Transaction transaction : transactions) {
+                transactionMapper.insertTransaction(transaction);
+            }
+        } catch (DuplicateKeyException e) {
+            throw new CreateStatementException("Statement for " + statement.getAccountIdentifier() + " has already been processed", e);
         }
+    }
 
-        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.SUCCESS);
+    /**
+     *
+     * @param importedStatement
+     * @param statementComposite
+     */
+    @Transactional
+    public void processImportedStatement(ImportedStatement importedStatement, StatementComposite statementComposite) throws CreateStatementException {
+        // link this statement to the original PDF source
+        statementComposite.getStatement().setImportedStatementId(importedStatement.getImportStatementId());
+        // persist the statement
+        insertStatement(statementComposite);
+        // flag the imported statement as processed
+        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.PROCESSED);
     }
 
     /**
@@ -75,10 +90,10 @@ public class StatementServiceImpl implements StatementService {
      * @param accountNumber
      * @param fileData
      * @param status
-     * @throws ImportException
+     * @throws CreateStatementException
      */
     @Transactional
-    public void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
+    public void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws CreateStatementException {
 
         if (fileData == null || fileData.length == 0) {
             throw new IllegalArgumentException("statementPdfFile is required");
@@ -94,13 +109,13 @@ public class StatementServiceImpl implements StatementService {
             statement.setStatus(status);
             statement.setImportDateTime(new Date());
         } catch (IOException e) {
-            throw new ImportException("Unable to read file data : " + e.toString(), e);
+            throw new CreateStatementException("Unable to read file data : " + e.toString(), e);
         }
 
         try {
             importedStatementMapper.insertImportedStatement(statement);
         } catch (DuplicateKeyException e) {
-            throw new ImportException("Statement has already been imported", e);
+            throw new CreateStatementException("Statement for " + accountNumber + " has already been imported", e);
         }
     }
 

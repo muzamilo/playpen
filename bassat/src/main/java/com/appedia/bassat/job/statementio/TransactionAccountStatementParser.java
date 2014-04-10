@@ -51,6 +51,9 @@ public class TransactionAccountStatementParser implements StatementParser {
                 try {
                     if (dataline.contains("Statement No")) {
                         statement.setSourceReference(dataline.substring(dataline.indexOf("Statement No") + 13, dataline.length()));
+                        if (StringUtils.isEmpty(statement.getSourceReference())) {
+                            throw new ParseException("Missing statement number or source reference");
+                        }
                     }
                     if (dataline.startsWith("Statement Frequency")) {
                         statement.setFrequency(StatementFrequency.valueOf(dataline.substring(20).toUpperCase()));

@@ -39,16 +39,23 @@ public class ProcessJob extends QuartzJobBean {
         List<ImportedStatement> pendingStatements = getStatementService().getImportedStatements(ImportStatus.PENDING);
         for (ImportedStatement importedStatement : pendingStatements) {
             try {
+                // for each imported statement ...
                 System.out.println(importedStatement);
+                // find the user owner of this statement
                 User user = getUserService().getUserById(importedStatement.getLinkUserId());
-                System.out.println("User is " + user);
+                System.out.println(user);
+                // extract the statement file from PDF to text
                 byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
+                // parse the statement into internal data structures
                 StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
-                getStatementService().insertStatement(statementComposite, importedStatement);
+                // process the statement
+                getStatementService().processImportedStatement(importedStatement, statementComposite);
+
             } catch (ParseException e) {
                 System.err.println("Error parsing statement file - updating import as failure");
                 // persist FAILED import statement record
                 getStatementService().updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.ERROR);
+
             } catch (Exception e) {
                 System.err.println("There was a problem processing imported statement " + importedStatement.getImportStatementId() + ": " + e.toString());
                 e.printStackTrace();
