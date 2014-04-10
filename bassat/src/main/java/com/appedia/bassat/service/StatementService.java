@@ -5,6 +5,7 @@ import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.StatementComposite;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -17,13 +18,7 @@ public interface StatementService {
      *
      * @return
      */
-    List<ImportedStatement> getStatementsToImport();
-
-    /**
-     *
-     * @return
-     */
-    List<ImportedStatement> getStatementsToRetryImport();
+    List<ImportedStatement> getImportedStatements(ImportStatus status);
 
     /**
      *
@@ -36,7 +31,7 @@ public interface StatementService {
      *
      * @param statementComposite
      */
-    void insertStatement(StatementComposite statementComposite);
+    void insertStatement(StatementComposite statementComposite, ImportedStatement importedStatement);
 
     /**
      *
@@ -47,5 +42,6 @@ public interface StatementService {
      * @throws ImportException
      */
     void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
+
 
 }

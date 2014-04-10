@@ -10,6 +10,7 @@ import java.util.Date;
 public class Statement implements Serializable {
 
     private long statementId;
+    private long importedStatementId;
     private StatementFrequency frequency;
     private Date fromDate;
     private Date toDate;
@@ -67,10 +68,19 @@ public class Statement implements Serializable {
         this.statementId = statementId;
     }
 
+    public long getImportedStatementId() {
+        return importedStatementId;
+    }
+
+    public void setImportedStatementId(long importedStatementId) {
+        this.importedStatementId = importedStatementId;
+    }
+
     @Override
     public String toString() {
         return "Statement{" +
                 "statementId=" + statementId +
+                ", importedStatementId=" + importedStatementId +
                 ", frequency=" + frequency +
                 ", fromDate=" + fromDate +
                 ", toDate=" + toDate +

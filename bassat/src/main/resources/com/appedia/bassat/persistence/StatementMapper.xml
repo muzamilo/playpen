@@ -7,13 +7,8 @@
     <cache/>
 
     <insert id="insertStatement" parameterType="Statement">
-        INSERT INTO statement (account_identifier, source_ref, frequency, from_date, to_date)
-        VALUES (#{accountIdentifier}, #{sourceRef}, #{frequency}, #{fromDate}, #{toDate})
-    </insert>
-
-    <insert id="insertTransaction" parameterType="Transaction">
-        INSERT INTO statement (statement_id, tx_datetime, raw_desc, indexed_desc, account)
-        VALUES (#{statementId}, #{txDateTime}, #{rawDescription}, #{indexedDescription}, #{amount})
+        INSERT INTO statement (import_statement_id, account_identifier, source_ref, frequency, from_date, to_date)
+        VALUES (#{importStatementId}, #{accountIdentifier}, #{sourceRef}, #{frequency}, #{fromDate}, #{toDate})
     </insert>
 
 </mapper>

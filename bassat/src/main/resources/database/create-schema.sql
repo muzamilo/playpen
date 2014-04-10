@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 DROP TABLE IF EXISTS `statement`;
 CREATE TABLE IF NOT EXISTS `statement` (
   `statement_id` int(10) unsigned NOT NULL auto_increment,
+  `import_statement_id` int(10) NOT NULL,
   `account_identifier` varchar(20) NOT NULL,
   `source_ref` varchar(20) NOT NULL,
   `frequency` varchar(10) NOT NULL,

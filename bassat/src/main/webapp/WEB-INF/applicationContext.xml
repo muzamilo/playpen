@@ -73,7 +73,7 @@
 
     <!-- define the running Import Job -->
     <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.StatementImportJob"/>
+        <property name="jobClass" value="com.appedia.bassat.job.MailImportJob"/>
         <property name="jobDataAsMap">
             <map>
                 <entry key="statementService" value-ref="statementService"/>
@@ -88,7 +88,7 @@
 
     <!-- define the running Import Job -->
     <bean name="processJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.StatementProcessJob"/>
+        <property name="jobClass" value="com.appedia.bassat.job.ProcessJob"/>
         <property name="jobDataAsMap">
             <map>
                 <entry key="statementService" value-ref="statementService"/>

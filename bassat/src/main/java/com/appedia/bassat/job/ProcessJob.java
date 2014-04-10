@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @author muz
  */
-public class StatementProcessJob extends QuartzJobBean {
+public class ProcessJob extends QuartzJobBean {
 
     private UserService userService;
     private AccountService accountService;
@@ -35,9 +35,8 @@ public class StatementProcessJob extends QuartzJobBean {
      * @throws org.quartz.JobExecutionException
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("###### EXECUTING Statement PROCESS JOB ######");
 
-        List<ImportedStatement> pendingStatements = getStatementService().getStatementsToImport();
+        List<ImportedStatement> pendingStatements = getStatementService().getImportedStatements(ImportStatus.PENDING);
         for (ImportedStatement importedStatement : pendingStatements) {
             try {
                 System.out.println(importedStatement);
@@ -45,7 +44,7 @@ public class StatementProcessJob extends QuartzJobBean {
                 System.out.println("User is " + user);
                 byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
                 StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
-                System.out.println(statementComposite.getStatement().toString());
+                getStatementService().insertStatement(statementComposite, importedStatement);
             } catch (ParseException e) {
                 System.err.println("Error parsing statement file - updating import as failure");
                 // persist FAILED import statement record
@@ -55,8 +54,6 @@ public class StatementProcessJob extends QuartzJobBean {
                 e.printStackTrace();
             }
         }
-
-        System.out.println("############################################");
 
     }
 

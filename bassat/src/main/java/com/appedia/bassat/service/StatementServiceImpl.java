@@ -2,21 +2,17 @@ package com.appedia.bassat.service;
 
 import com.appedia.bassat.common.CompressionUtil;
 import com.appedia.bassat.common.HashUtil;
-import com.appedia.bassat.domain.ImportStatus;
-import com.appedia.bassat.domain.ImportedStatement;
-import com.appedia.bassat.domain.StatementComposite;
+import com.appedia.bassat.domain.*;
 import com.appedia.bassat.persistence.ImportedStatementMapper;
 import com.appedia.bassat.persistence.StatementMapper;
 import com.appedia.bassat.persistence.TransactionMapper;
-import org.apache.commons.io.FileUtils;
-import org.apache.pdfbox.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,16 +33,12 @@ public class StatementServiceImpl implements StatementService {
      *
      * @return
      */
-    public List<ImportedStatement> getStatementsToImport() {
-        return importedStatementMapper.getImportedStatementsByStatus(ImportStatus.PENDING);
-    }
-
-    /**
-     *
-     * @return
-     */
-    public List<ImportedStatement> getStatementsToRetryImport() {
-        return importedStatementMapper.getImportedStatementsByStatus(ImportStatus.ERROR);
+    public List<ImportedStatement> getImportedStatements(ImportStatus status) {
+        List<ImportedStatement> statements = importedStatementMapper.getImportedStatementsByStatus(status);
+        for (ImportedStatement statement : statements) {
+            decompressFileData(statement);
+        }
+        return statements;
     }
 
     /**
@@ -61,9 +53,20 @@ public class StatementServiceImpl implements StatementService {
     /**
      *
      * @param statementComposite
+     * @param importedStatement
      */
     @Transactional
-    public void insertStatement(StatementComposite statementComposite) {
+    public void insertStatement(StatementComposite statementComposite, ImportedStatement importedStatement) {
+        Statement statement = statementComposite.getStatement();
+        statement.setImportedStatementId(importedStatement.getImportStatementId());
+        statementMapper.insertStatement(statement);
+
+        List<Transaction> transactions = Arrays.asList(statementComposite.getTransactions());
+        for (Transaction transaction : transactions) {
+            transactionMapper.insertTransaction(transaction);
+        }
+
+        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.SUCCESS);
     }
 
     /**
@@ -83,19 +86,11 @@ public class StatementServiceImpl implements StatementService {
 
         ImportedStatement statement;
         try {
-//            if (enableCompression) {
-//                System.out.println("#### COMPRESSING DATA ####");
-//                System.out.println("File size was " + fileData.length + " bytes");
-//                fileData = CompressionUtil.compress(fileData);
-//                System.out.println("File size is now " + fileData.length + " bytes");
-//            }
-            String fileHashKey = HashUtil.hash(fileData.toString(), "SHA1");
-
             statement = new ImportedStatement();
-            statement.setPdfFileData(fileData);
+            statement.setPdfFileData(CompressionUtil.compress(fileData));
             statement.setLinkAccountNumber(accountNumber);
             statement.setLinkUserId(userId);
-            statement.setPdfFileChecksum(fileHashKey);
+            statement.setPdfFileChecksum(HashUtil.hash(Arrays.toString(fileData), "SHA1"));
             statement.setStatus(status);
             statement.setImportDateTime(new Date());
         } catch (IOException e) {
@@ -108,5 +103,19 @@ public class StatementServiceImpl implements StatementService {
             throw new ImportException("Statement has already been imported", e);
         }
     }
+
+    /**
+     * Helper method to decompress the PDF file data in the imported statement
+     *
+     * @param importedStatement
+     */
+    protected final void decompressFileData(ImportedStatement importedStatement) {
+        try {
+            importedStatement.setPdfFileData(CompressionUtil.decompress(importedStatement.getPdfFileData()));
+        } catch (Exception e) {
+            throw new DataIntegrityViolationException("PDF file data could not be decompressed : " + e.toString());
+        }
+    }
+
 
 }

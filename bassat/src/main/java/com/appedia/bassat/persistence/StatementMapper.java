@@ -15,10 +15,4 @@ public interface StatementMapper {
      */
     void insertStatement(Statement statement);
 
-    /**
-     *
-     * @param transaction
-     */
-    void insertTransaction(Transaction transaction);
-
 }

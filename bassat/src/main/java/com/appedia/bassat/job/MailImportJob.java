@@ -27,7 +27,7 @@ import java.io.InputStream;
 /**
  * @author muz
  */
-public class StatementImportJob extends QuartzJobBean implements MailboxMessageHandler {
+public class MailImportJob extends QuartzJobBean implements MailboxMessageHandler {
 
     private final static String TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator;
 
@@ -44,11 +44,8 @@ public class StatementImportJob extends QuartzJobBean implements MailboxMessageH
      * @throws JobExecutionException
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("###### EXECUTING Statement IMPORT JOB ######");
 
         getMailboxReader().processInbox(this);
-
-        System.out.println("############################################");
 
     }
 
