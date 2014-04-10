@@ -10,12 +10,10 @@ import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
-import org.apache.pdfbox.io.IOUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,14 +34,14 @@ public class ProcessJob extends QuartzJobBean {
      */
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
+        System.out.println("Checking for pending imports ...");
         List<ImportedStatement> pendingStatements = getStatementService().getImportedStatements(ImportStatus.PENDING);
         for (ImportedStatement importedStatement : pendingStatements) {
             try {
                 // for each imported statement ...
-                System.out.println(importedStatement);
+                System.out.println("Found " + importedStatement);
                 // find the user owner of this statement
                 User user = getUserService().getUserById(importedStatement.getLinkUserId());
-                System.out.println(user);
                 // extract the statement file from PDF to text
                 byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
                 // parse the statement into internal data structures
@@ -54,10 +52,11 @@ public class ProcessJob extends QuartzJobBean {
             } catch (ParseException e) {
                 System.err.println("Error parsing statement file - updating import as failure");
                 // persist FAILED import statement record
-                getStatementService().updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.ERROR);
+                importedStatement.setStatus(ImportStatus.ERROR);
+                getStatementService().updateImportedStatement(importedStatement);
 
             } catch (Exception e) {
-                System.err.println("There was a problem processing imported statement " + importedStatement.getImportStatementId() + ": " + e.toString());
+                System.err.println("There was a problem processing imported statement " + importedStatement.getImportedStatementId() + ": " + e.toString());
                 e.printStackTrace();
             }
         }

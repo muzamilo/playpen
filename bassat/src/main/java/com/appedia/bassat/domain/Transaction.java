@@ -9,40 +9,30 @@ import java.util.Date;
 public class Transaction {
 
     private long statementId;
-    private Date txDateTime;
-    private String rawDescription;
-    private String indexedDescription;
+    private Date txDate;
+    private String description;
     private double amount;
 
-    public Transaction(Date txDateTime, String rawDescription, String indexedDescription, double amount) {
-        this.txDateTime = txDateTime;
-        this.rawDescription = rawDescription;
-        this.indexedDescription = indexedDescription;
+    public Transaction(Date txDate, String description, double amount) {
+        this.txDate = txDate;
+        this.description = description;
         this.amount = amount;
     }
 
-    public Date getTxDateTime() {
-        return txDateTime;
+    public Date getTxDate() {
+        return txDate;
     }
 
-    public void setTxDateTime(Date txDateTime) {
-        this.txDateTime = txDateTime;
+    public void setTxDate(Date txDate) {
+        this.txDate = txDate;
     }
 
-    public String getRawDescription() {
-        return rawDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setRawDescription(String rawDescription) {
-        this.rawDescription = rawDescription;
-    }
-
-    public String getIndexedDescription() {
-        return indexedDescription;
-    }
-
-    public void setIndexedDescription(String indexedDescription) {
-        this.indexedDescription = indexedDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public double getAmount() {

@@ -6,19 +6,19 @@
 USE bassat;
 
 --
--- Table structure for table `import_statement`
+-- Table structure for table `imported_statement`
 --
-DROP TABLE IF EXISTS `import_statement`;
-CREATE TABLE IF NOT EXISTS `import_statement` (
-  `import_statement_id` int(10) unsigned NOT NULL auto_increment,
+DROP TABLE IF EXISTS `imported_statement`;
+CREATE TABLE IF NOT EXISTS `imported_statement` (
+  `imported_statement_id` int(10) unsigned NOT NULL auto_increment,
   `import_datetime` datetime NOT NULL,
   `link_user_id` int(10) NOT NULL,
-  `link_account_number` varchar(20) NULL,
+  `link_account_identifier` varchar(20) NULL,
   `pdf_file_checksum` char(40) NOT NULL,
   `pdf_file_data` blob NOT NULL,
   `status` numeric(1) NOT NULL,
-  PRIMARY KEY  (`import_statement_id`),
-  UNIQUE KEY `UNQ_USER_ACC_HASH` (`link_user_id`, `link_account_number`, `pdf_file_checksum`)
+  PRIMARY KEY  (`imported_statement_id`),
+  UNIQUE KEY `UNQ_USER_ACC_HASH` (`link_user_id`, `link_account_identifier`, `pdf_file_checksum`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 DROP TABLE IF EXISTS `statement`;
 CREATE TABLE IF NOT EXISTS `statement` (
   `statement_id` int(10) unsigned NOT NULL auto_increment,
-  `import_statement_id` int(10) NOT NULL,
+  `imported_statement_id` int(10) NOT NULL,
   `account_identifier` varchar(20) NOT NULL,
   `source_ref` varchar(20) NOT NULL,
   `frequency` varchar(10) NOT NULL,
@@ -73,12 +73,11 @@ DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE IF NOT EXISTS `transaction` (
   `transaction_id` int(10) unsigned NOT NULL auto_increment,
   `statement_id` int(10) NOT NULL,
-  `tx_datetime` datetime NOT NULL,
-  `raw_desc` varchar(50) NOT NULL,
-  `indexed_desc` varchar(50) NOT NULL,
+  `tx_date` date NOT NULL,
+  `description` varchar(64) NOT NULL,
   `amount` decimal(13,2) NOT NULL,
   PRIMARY KEY  (`transaction_id`),
-  UNIQUE KEY `UNQ_TRANSACTION` (`tx_datetime`, `raw_desc`, `amount`)
+  UNIQUE KEY `UNQ_TRANSACTION` (`tx_date`, `description`, `amount`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

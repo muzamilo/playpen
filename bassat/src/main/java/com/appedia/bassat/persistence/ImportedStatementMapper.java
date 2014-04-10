@@ -26,9 +26,8 @@ public interface ImportedStatementMapper {
 
     /**
      *
-     * @param importStatementId
-     * @param status
+     * @param importedStatement
      */
-    void updateImportedStatementStatus(long importStatementId, ImportStatus status);
+    void updateImportedStatement(ImportedStatement importedStatement);
 
 }

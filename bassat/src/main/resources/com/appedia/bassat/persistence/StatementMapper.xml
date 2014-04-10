@@ -6,9 +6,9 @@
 
     <cache/>
 
-    <insert id="insertStatement" parameterType="Statement">
-        INSERT INTO statement (import_statement_id, account_identifier, source_ref, frequency, from_date, to_date)
-        VALUES (#{importStatementId}, #{accountIdentifier}, #{sourceRef}, #{frequency}, #{fromDate}, #{toDate})
+    <insert id="insertStatement" parameterType="Statement" useGeneratedKeys="true" keyProperty="statementId">
+        INSERT INTO statement (imported_statement_id, account_identifier, source_ref, frequency, from_date, to_date)
+        VALUES (#{importedStatementId}, #{accountIdentifier}, #{sourceReference}, #{frequency}, #{fromDate}, #{toDate})
     </insert>
 
 </mapper>

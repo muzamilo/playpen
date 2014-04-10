@@ -1,7 +1,6 @@
 package com.appedia.bassat.domain;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -10,20 +9,20 @@ import java.util.Date;
  */
 public class ImportedStatement implements Serializable {
 
-    private long importStatementId;
+    private long importedStatementId;
     private Date importDateTime;
     private long linkUserId;
-    private String linkAccountNumber;
+    private String linkAccountIdentifier;
     private String pdfFileChecksum;
     private byte[] pdfFileData;
     private ImportStatus status;
 
-    public long getImportStatementId() {
-        return importStatementId;
+    public long getImportedStatementId() {
+        return importedStatementId;
     }
 
-    public void setImportStatementId(long importStatementId) {
-        this.importStatementId = importStatementId;
+    public void setImportedStatementId(long importedStatementId) {
+        this.importedStatementId = importedStatementId;
     }
 
     public Date getImportDateTime() {
@@ -43,11 +42,11 @@ public class ImportedStatement implements Serializable {
     }
 
     public String getLinkAccountNumber() {
-        return linkAccountNumber;
+        return linkAccountIdentifier;
     }
 
-    public void setLinkAccountNumber(String linkAccountNumber) {
-        this.linkAccountNumber = linkAccountNumber;
+    public void setLinkAccountNumber(String linkAccountIdentifier) {
+        this.linkAccountIdentifier = linkAccountIdentifier;
     }
 
     public String getPdfFileChecksum() {
@@ -77,10 +76,10 @@ public class ImportedStatement implements Serializable {
     @Override
     public String toString() {
         return "ImportedStatement{" +
-                "importStatementId=" + importStatementId +
+                "importedStatementId=" + importedStatementId +
                 ", importDateTime=" + importDateTime +
                 ", linkUserId='" + linkUserId + '\'' +
-                ", linkAccountNumber='" + linkAccountNumber + '\'' +
+                ", linkAccountIdentifier='" + linkAccountIdentifier + '\'' +
                 ", pdfFileChecksum='" + pdfFileChecksum + '\'' +
                 ", pdfFileData=(" + pdfFileData.length + " bytes)" +
                 ", status=" + status +

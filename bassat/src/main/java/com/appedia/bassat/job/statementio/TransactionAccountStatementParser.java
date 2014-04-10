@@ -94,7 +94,7 @@ public class TransactionAccountStatementParser implements StatementParser {
                         txDate = formatFor_MMddyyyy.parse(txDayMonth + " " + txYear);
                     }
                     lastTxDate = txDate;
-                    transactionLines.add(new Transaction(txDate, description, description, amount));
+                    transactionLines.add(new Transaction(txDate, description, amount));
                 } catch (Exception e) {
                     throw new ParseException("Unable to parse transaction", e);
                 }

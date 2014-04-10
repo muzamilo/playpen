@@ -43,11 +43,10 @@ public class StatementServiceImpl implements StatementService {
 
     /**
      *
-     * @param importedStatementId
-     * @param status
+     * @param importedStatement
      */
-    public void updateImportedStatementStatus(long importedStatementId, ImportStatus status) {
-        importedStatementMapper.updateImportedStatementStatus(importedStatementId, status);
+    public void updateImportedStatement(ImportedStatement importedStatement) {
+        importedStatementMapper.updateImportedStatement(importedStatement);
     }
 
     /**
@@ -62,6 +61,7 @@ public class StatementServiceImpl implements StatementService {
 
             List<Transaction> transactions = Arrays.asList(statementComposite.getTransactions());
             for (Transaction transaction : transactions) {
+                transaction.setStatementId(statement.getStatementId());
                 transactionMapper.insertTransaction(transaction);
             }
         } catch (DuplicateKeyException e) {
@@ -77,11 +77,12 @@ public class StatementServiceImpl implements StatementService {
     @Transactional
     public void processImportedStatement(ImportedStatement importedStatement, StatementComposite statementComposite) throws CreateStatementException {
         // link this statement to the original PDF source
-        statementComposite.getStatement().setImportedStatementId(importedStatement.getImportStatementId());
+        statementComposite.getStatement().setImportedStatementId(importedStatement.getImportedStatementId());
         // persist the statement
         insertStatement(statementComposite);
         // flag the imported statement as processed
-        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.PROCESSED);
+        importedStatement.setStatus(ImportStatus.PROCESSED);
+        importedStatementMapper.updateImportedStatement(importedStatement);
     }
 
     /**

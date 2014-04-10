@@ -60,7 +60,7 @@
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <!--<ref bean="importJobTrigger"/>-->
+                <ref bean="importJobTrigger"/>
                 <ref bean="processJobTrigger"/>
             </list>
         </property>

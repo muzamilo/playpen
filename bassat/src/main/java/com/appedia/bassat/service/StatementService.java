@@ -20,10 +20,9 @@ public interface StatementService {
 
     /**
      *
-     * @param importedStatementId
-     * @param status
+     * @param importedStatement
      */
-    void updateImportedStatementStatus(long importedStatementId, ImportStatus status);
+    void updateImportedStatement(ImportedStatement importedStatement);
 
     /**
      *

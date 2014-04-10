@@ -10,6 +10,7 @@ import com.appedia.bassat.job.statementio.PDFExtractor;
 import com.appedia.bassat.job.statementio.ParseException;
 import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
+import com.appedia.bassat.service.CreateStatementException;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
 import org.apache.pdfbox.io.IOUtils;
@@ -22,6 +23,7 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -84,23 +86,27 @@ public class MailImportJob extends QuartzJobBean implements MailboxMessageHandle
                         byte[] pdfFileData = IOUtils.toByteArray(fileDataStream);
                         byte[] txtFileData = getPdfExtractor().extractToText(pdfFileData, user.getIdNumber());
 
-                        // import PDF
-                        System.out.println("Importing fileAttachment " + fileAttachment);
                         try {
-                            // validate statement
-                            StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
-                            String accountIdentifier = statementComposite.getStatement().getAccountIdentifier();
-                            if (!getAccountService().checkUserHasAccount(user, accountIdentifier)) {
-                                throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
+                            // import PDF
+                            System.out.println("Importing fileAttachment " + fileAttachment);
+                            try {
+                                // validate statement
+                                StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
+                                String accountIdentifier = statementComposite.getStatement().getAccountIdentifier();
+                                if (!getAccountService().checkUserHasAccount(user, accountIdentifier)) {
+                                    throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
+                                }
+
+                                // persist SUCCESSFUL import statement record
+                                getStatementService().uploadStatementFile(user.getUserId(), accountIdentifier, pdfFileData, ImportStatus.PENDING);
+
+                            } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
+                                System.err.println("Error parsing statement file - importing as failure");
+                                // persist FAILED import statement record
+                                getStatementService().uploadStatementFile(user.getUserId(), null, pdfFileData, ImportStatus.ERROR);
                             }
-
-                            // persist SUCCESSFUL import statement record
-                            getStatementService().uploadStatementFile(user.getUserId(), accountIdentifier, pdfFileData, ImportStatus.PENDING);
-
-                        } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
-                            System.err.println("Error parsing statement file - importing as failure");
-                            // persist FAILED import statement record
-                            getStatementService().uploadStatementFile(user.getUserId(), null, pdfFileData, ImportStatus.ERROR);
+                        } catch (CreateStatementException e) {
+                            throw new InvalidMessageException(e.getMessage());
                         }
                     } else if (fileAttachment != null) {
                         System.err.println("Unsupported file fileAttachment " + fileAttachment + " - skipping ...");

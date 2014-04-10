@@ -7,21 +7,32 @@
     <cache/>
 
     <select id="getImportedStatementsByStatus" parameterType="ImportStatus" resultType="ImportedStatement">
-        SELECT import_statement_id as importStatementId,
+        SELECT imported_statement_id as importedStatementId,
                import_datetime as importDateTime,
                link_user_id as linkUserId,
-               link_account_number as linkAccountNumber,
+               link_account_identifier as linkAccountIdentifier,
                pdf_file_checksum as pdfFileChecksum,
                pdf_file_data as pdfFileData,
                status
-        FROM import_statement
-        WHERE status='P'
+        FROM imported_statement
+        WHERE status = '#{statusCode}'
     </select>
 
     <insert id="insertImportedStatement" parameterType="ImportedStatement">
-        INSERT INTO import_statement (import_datetime, link_user_id, link_account_number, pdf_file_checksum, pdf_file_data, status)
-        VALUES (#{importDateTime}, #{linkUserId}, #{linkAccountNumber}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
+        INSERT INTO imported_statement (import_datetime, link_user_id, link_account_identifier, pdf_file_checksum, pdf_file_data, status)
+        VALUES (#{importDateTime}, #{linkUserId}, #{linkAccountIdentifier}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
     </insert>
+
+    <update id="updateImportedStatement" parameterType="ImportedStatement">
+        UPDATE imported_statement
+        SET import_datetime = #{importDateTime},
+            link_user_id = #{linkUserId},
+            link_account_identifier = #{linkAccountIdentifier},
+            pdf_file_checksum = #{pdfFileChecksum},
+            pdf_file_data = #{pdfFileData},
+            status = #{status.statusCode}
+        WHERE imported_statement_id = #{importedStatementId}
+    </update>
 
 </mapper>
 
