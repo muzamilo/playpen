@@ -12,10 +12,18 @@ public enum ImportStatus {
 
     private int statusCode;
 
+    /**
+     *
+     * @param statusCode
+     */
     private ImportStatus(int statusCode) {
         this.statusCode = statusCode;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getStatusCode() {
         return statusCode;
     }

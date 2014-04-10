@@ -81,7 +81,7 @@ public class StatementServiceImpl implements StatementService {
         // persist the statement
         insertStatement(statementComposite);
         // flag the imported statement as processed
-        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.PROCESSED);
+        importedStatementMapper.updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.SUCCESS);
     }
 
     /**

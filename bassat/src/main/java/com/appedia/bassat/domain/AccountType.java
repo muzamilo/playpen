@@ -12,10 +12,18 @@ public enum AccountType {
 
     private int type;
 
+    /**
+     *
+     * @param type
+     */
     private AccountType(int type) {
         this.type = type;
     }
 
+    /**
+     *
+     * @return
+     */
     public int getType() {
         return type;
     }
