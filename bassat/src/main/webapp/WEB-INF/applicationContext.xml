@@ -60,16 +60,14 @@
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="importJobTrigger"/>
+                <!--<ref bean="importJobTrigger"/>-->
                 <ref bean="processJobTrigger"/>
             </list>
         </property>
     </bean>
 
     <!-- define services -->
-    <bean id="statementService" class="com.appedia.bassat.service.StatementServiceImpl">
-        <property name="enableCompression" value="true"/>
-    </bean>
+    <bean id="statementService" class="com.appedia.bassat.service.StatementServiceImpl"/>
     <bean id="userService" class="com.appedia.bassat.service.UserServiceImpl"/>
     <bean id="accountService" class="com.appedia.bassat.service.AccountServiceImpl"/>
 
@@ -97,6 +95,7 @@
                 <entry key="userService" value-ref="userService"/>
                 <entry key="accountService" value-ref="accountService"/>
                 <entry key="statementBuilder" value-ref="statementBuilder"/>
+                <entry key="pdfExtractor" value-ref="pdfExtractor"/>
             </map>
         </property>
     </bean>

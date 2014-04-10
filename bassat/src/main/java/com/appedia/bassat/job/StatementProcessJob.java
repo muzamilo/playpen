@@ -3,11 +3,14 @@ package com.appedia.bassat.job;
 import com.appedia.bassat.domain.ImportStatus;
 import com.appedia.bassat.domain.ImportedStatement;
 import com.appedia.bassat.domain.StatementComposite;
+import com.appedia.bassat.domain.User;
+import com.appedia.bassat.job.statementio.PDFExtractor;
 import com.appedia.bassat.job.statementio.ParseException;
 import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
+import org.apache.pdfbox.io.IOUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -24,6 +27,7 @@ public class StatementProcessJob extends QuartzJobBean {
     private AccountService accountService;
     private StatementService statementService;
     private StatementBuilder statementBuilder;
+    private PDFExtractor pdfExtractor;
 
     /**
      *
@@ -36,13 +40,18 @@ public class StatementProcessJob extends QuartzJobBean {
         List<ImportedStatement> pendingStatements = getStatementService().getStatementsToImport();
         for (ImportedStatement importedStatement : pendingStatements) {
             try {
-                StatementComposite statementComposite = getStatementBuilder().build(importedStatement.getPdfFileData());
+                System.out.println(importedStatement);
+                User user = getUserService().getUserById(importedStatement.getLinkUserId());
+                System.out.println("User is " + user);
+                byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
+                StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
                 System.out.println(statementComposite.getStatement().toString());
             } catch (ParseException e) {
                 System.err.println("Error parsing statement file - updating import as failure");
                 // persist FAILED import statement record
                 getStatementService().updateImportedStatementStatus(importedStatement.getImportStatementId(), ImportStatus.ERROR);
-            } catch (IOException e) {
+            } catch (Exception e) {
+                System.err.println("There was a problem processing imported statement " + importedStatement.getImportStatementId() + ": " + e.toString());
                 e.printStackTrace();
             }
         }
@@ -115,6 +124,21 @@ public class StatementProcessJob extends QuartzJobBean {
         this.statementBuilder = statementBuilder;
     }
 
+    /**
+     *
+     * @return
+     */
+    public PDFExtractor getPdfExtractor() {
+        return pdfExtractor;
+    }
+
+    /**
+     *
+     * @param pdfExtractor
+     */
+    public void setPdfExtractor(PDFExtractor pdfExtractor) {
+        this.pdfExtractor = pdfExtractor;
+    }
 }
 
 

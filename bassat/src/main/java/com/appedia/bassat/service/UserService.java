@@ -10,6 +10,13 @@ public interface UserService {
 
     /**
      *
+     * @param userId
+     * @return
+     */
+    User getUserById(long userId);
+
+    /**
+     *
      * @param emailAddress
      * @return
      */

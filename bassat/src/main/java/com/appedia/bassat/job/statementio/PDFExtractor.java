@@ -26,10 +26,10 @@ public class PDFExtractor {
      * Starts the textual extraction.
      *
      * @param password
-     * @param istream
+     * @param pdfFileData
      * @throws Exception
      */
-    public byte[] extractToText(InputStream istream, String password) throws IOException, PDFExtractionException
+    public byte[] extractToText(byte[] pdfFileData, String password) throws IOException, PDFExtractionException
     {
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
@@ -37,17 +37,15 @@ public class PDFExtractor {
         Writer output = null;
         PDDocument document = null;
         try {
-            ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-
-            document = PDDocument.load(istream);
+            document = PDDocument.load(new BufferedInputStream(new ByteArrayInputStream(pdfFileData)));
             if( document.isEncrypted() )
             {
                 StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
                 document.openProtection( sdm );
             }
 
-            //use default encoding
-            output = new OutputStreamWriter(ostream);
+            // use default encoding
+            output = new StringWriter();
 
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setForceParsing(false);
@@ -57,7 +55,7 @@ public class PDFExtractor {
             stripper.setEndPage(endPage);
 
             // Extract text for main document:
-            stripper.writeText( document, output );
+            stripper.writeText(document, output);
 
             // ... also for any embedded PDFs:
             PDDocumentCatalog catalog = document.getDocumentCatalog();
@@ -92,7 +90,7 @@ public class PDFExtractor {
                 }
             }
 
-            return ostream.toByteArray();
+            return output.toString().getBytes();
 
         } catch (CryptographyException e) {
             throw new PDFExtractionException(e);
@@ -101,10 +99,10 @@ public class PDFExtractor {
             throw new PDFExtractionException(e);
 
         } finally {
-            if( output != null ) {
+            if (output != null) {
                 output.close();
             }
-            if( document != null ) {
+            if (document != null) {
                 document.close();
             }
         }

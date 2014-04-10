@@ -12,7 +12,7 @@ public class ImportedStatement implements Serializable {
 
     private long importStatementId;
     private Date importDateTime;
-    private String linkUserEmail;
+    private long linkUserId;
     private String linkAccountNumber;
     private String pdfFileChecksum;
     private byte[] pdfFileData;
@@ -34,12 +34,12 @@ public class ImportedStatement implements Serializable {
         this.importDateTime = importDateTime;
     }
 
-    public String getLinkUserEmail() {
-        return linkUserEmail;
+    public long getLinkUserId() {
+        return linkUserId;
     }
 
-    public void setLinkUserEmail(String linkUserEmail) {
-        this.linkUserEmail = linkUserEmail;
+    public void setLinkUserId(long linkUserId) {
+        this.linkUserId = linkUserId;
     }
 
     public String getLinkAccountNumber() {
@@ -79,10 +79,10 @@ public class ImportedStatement implements Serializable {
         return "ImportedStatement{" +
                 "importStatementId=" + importStatementId +
                 ", importDateTime=" + importDateTime +
-                ", linkUserEmail='" + linkUserEmail + '\'' +
+                ", linkUserId='" + linkUserId + '\'' +
                 ", linkAccountNumber='" + linkAccountNumber + '\'' +
                 ", pdfFileChecksum='" + pdfFileChecksum + '\'' +
-                ", pdfFileData=" + Arrays.toString(pdfFileData) +
+                ", pdfFileData=(" + pdfFileData.length + " bytes)" +
                 ", status=" + status +
                 '}';
     }

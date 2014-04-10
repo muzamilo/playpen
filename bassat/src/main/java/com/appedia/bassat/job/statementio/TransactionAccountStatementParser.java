@@ -45,7 +45,6 @@ public class TransactionAccountStatementParser implements StatementParser {
                     cal.setTime(statement.getFromDate());
                     txYear = cal.get(Calendar.YEAR);
                     hasHeader = true;
-                    System.out.println(statement.toString());
                 }
 
             } else if (!hasHeader && nextSegment == Segment.HEADER) {

@@ -15,6 +15,16 @@ public class UserServiceImpl implements UserService {
 
     /**
      *
+     * @param userId
+     * @return
+     */
+    @Override
+    public User getUserById(long userId) {
+        return userMapper.getUserById(userId);
+    }
+
+    /**
+     *
      * @param emailAddress
      * @return
      */

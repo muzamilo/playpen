@@ -40,12 +40,12 @@ public interface StatementService {
 
     /**
      *
-     * @param userEmail
+     * @param userId
      * @param accountNumber
      * @param fileData
      * @param status
      * @throws ImportException
      */
-    void uploadStatementFile(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
+    void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException;
 
 }

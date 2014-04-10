@@ -33,8 +33,6 @@ public class StatementServiceImpl implements StatementService {
     @Autowired
     private ImportedStatementMapper importedStatementMapper;
 
-    private boolean enableCompression;
-
     /**
      *
      * @return
@@ -70,32 +68,33 @@ public class StatementServiceImpl implements StatementService {
 
     /**
      *
-     * @param userEmail
+     * @param userId
      * @param accountNumber
      * @param fileData
      * @param status
      * @throws ImportException
      */
     @Transactional
-    public void uploadStatementFile(String userEmail, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
+    public void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws ImportException {
 
-        if (userEmail == null || fileData == null) {
-            throw new IllegalArgumentException("userEmail and statementPdfFile are required");
+        if (fileData == null || fileData.length == 0) {
+            throw new IllegalArgumentException("statementPdfFile is required");
         }
 
         ImportedStatement statement;
         try {
-            if (enableCompression) {
-                System.out.println("#### COMPRESSING DATA ####");
-                fileData = CompressionUtil.compress(fileData);
-                System.out.println("File size is now " + fileData.length + " bytes");
-            }
+//            if (enableCompression) {
+//                System.out.println("#### COMPRESSING DATA ####");
+//                System.out.println("File size was " + fileData.length + " bytes");
+//                fileData = CompressionUtil.compress(fileData);
+//                System.out.println("File size is now " + fileData.length + " bytes");
+//            }
             String fileHashKey = HashUtil.hash(fileData.toString(), "SHA1");
 
             statement = new ImportedStatement();
             statement.setPdfFileData(fileData);
             statement.setLinkAccountNumber(accountNumber);
-            statement.setLinkUserEmail(userEmail);
+            statement.setLinkUserId(userId);
             statement.setPdfFileChecksum(fileHashKey);
             statement.setStatus(status);
             statement.setImportDateTime(new Date());
@@ -108,14 +107,6 @@ public class StatementServiceImpl implements StatementService {
         } catch (DuplicateKeyException e) {
             throw new ImportException("Statement has already been imported", e);
         }
-    }
-
-    /**
-     *
-     * @param enableCompression
-     */
-    public void setEnableCompression(boolean enableCompression) {
-        this.enableCompression = enableCompression;
     }
 
 }

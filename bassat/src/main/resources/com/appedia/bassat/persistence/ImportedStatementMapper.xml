@@ -9,7 +9,7 @@
     <select id="getImportedStatementsByStatus" parameterType="ImportStatus" resultType="ImportedStatement">
         SELECT import_statement_id as importStatementId,
                import_datetime as importDateTime,
-               link_user_email as linkUserEmail,
+               link_user_id as linkUserId,
                link_account_number as linkAccountNumber,
                pdf_file_checksum as pdfFileChecksum,
                pdf_file_data as pdfFileData,
@@ -19,8 +19,8 @@
     </select>
 
     <insert id="insertImportedStatement" parameterType="ImportedStatement">
-        INSERT INTO import_statement (import_datetime, link_user_email, link_account_number, pdf_file_checksum, pdf_file_data, status)
-        VALUES (#{importDateTime}, #{linkUserEmail}, #{linkAccountNumber}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
+        INSERT INTO import_statement (import_datetime, link_user_id, link_account_number, pdf_file_checksum, pdf_file_data, status)
+        VALUES (#{importDateTime}, #{linkUserId}, #{linkAccountNumber}, #{pdfFileChecksum}, #{pdfFileData}, #{status.statusCode})
     </insert>
 
 </mapper>

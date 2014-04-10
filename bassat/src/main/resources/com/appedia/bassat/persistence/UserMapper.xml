@@ -6,6 +6,18 @@
 
     <cache/>
 
+    <select id="getUserById" parameterType="long" resultType="User">
+        SELECT user_id as userId,
+        id_number as idNumber,
+        title,
+        first_name as firstName,
+        surname,
+        password,
+        email
+        FROM user
+        WHERE user_id=#{userId}
+    </select>
+
     <select id="getUserByEmail" parameterType="String" resultType="User">
         SELECT user_id as userId,
                id_number as idNumber,

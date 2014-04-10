@@ -10,6 +10,13 @@ public interface UserMapper {
 
     /**
      *
+     * @param userId
+     * @return
+     */
+    User getUserById(long userId);
+
+    /**
+     *
      * @param emailAddress
      * @return
      */

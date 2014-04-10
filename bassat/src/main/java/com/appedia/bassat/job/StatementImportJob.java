@@ -12,6 +12,7 @@ import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
+import org.apache.pdfbox.io.IOUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -82,26 +83,27 @@ public class StatementImportJob extends QuartzJobBean implements MailboxMessageH
                         System.out.println("Found fileAttachment " + fileAttachment);
 
                         // extractToText PDF
-                        System.out.println("Extracting fileAttachment " + fileAttachment);
-                        byte[] fileData = getPdfExtractor().extractToText(fileDataStream, user.getIdNumber());
+                        System.out.println("Extracting " + fileAttachment + " to text");
+                        byte[] pdfFileData = IOUtils.toByteArray(fileDataStream);
+                        byte[] txtFileData = getPdfExtractor().extractToText(pdfFileData, user.getIdNumber());
 
                         // import PDF
-                        System.out.println("Importing fileAttachment " + fileAttachment + " (" + fileData.length + " bytes)");
+                        System.out.println("Importing fileAttachment " + fileAttachment);
                         try {
                             // validate statement
-                            StatementComposite statementComposite = getStatementBuilder().build(fileData);
+                            StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
                             String accountIdentifier = statementComposite.getStatement().getAccountIdentifier();
                             if (!getAccountService().checkUserHasAccount(user, accountIdentifier)) {
                                 throw new InvalidMessageException("Account " + accountIdentifier + " does not belong to user " + user.getEmail());
                             }
 
                             // persist SUCCESSFUL import statement record
-                            getStatementService().uploadStatementFile(emailAddress, accountIdentifier, fileData, ImportStatus.PENDING);
+                            getStatementService().uploadStatementFile(user.getUserId(), accountIdentifier, pdfFileData, ImportStatus.PENDING);
 
                         } catch (ParseException e) { // we still import valid but incorrectly structured statements -- in case it can be fixed
                             System.err.println("Error parsing statement file - importing as failure");
                             // persist FAILED import statement record
-                            getStatementService().uploadStatementFile(emailAddress, null, fileData, ImportStatus.ERROR);
+                            getStatementService().uploadStatementFile(user.getUserId(), null, pdfFileData, ImportStatus.ERROR);
                         }
                     } else if (fileAttachment != null) {
                         System.err.println("Unsupported file fileAttachment " + fileAttachment + " - skipping ...");
@@ -206,6 +208,7 @@ public class StatementImportJob extends QuartzJobBean implements MailboxMessageH
     public void setPdfExtractor(PDFExtractor pdfExtractor) {
         this.pdfExtractor = pdfExtractor;
     }
+
 }
 
 
