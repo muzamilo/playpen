@@ -22,89 +22,91 @@ import java.util.Map;
  */
 public class PDFExtractor {
 
+    private static final String MIME_TYPE_PDF = "application/pdf";
+
     /**
-     * Starts the textual extraction.
+     * Extract the PDF into text
      *
-     * @param password
      * @param pdfFileData
-     * @throws Exception
+     * @param password
+     * @throws PDFExtractionException
      */
-    public byte[] extractToText(byte[] pdfFileData, String password) throws IOException, PDFExtractionException
+    public byte[] extractToText(byte[] pdfFileData, String password) throws PDFExtractionException
     {
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
 
-        Writer output = null;
-        PDDocument document = null;
         try {
-            document = PDDocument.load(new BufferedInputStream(new ByteArrayInputStream(pdfFileData)));
-            if( document.isEncrypted() )
-            {
-                StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
-                document.openProtection( sdm );
-            }
+            PDDocument document = PDDocument.load(new BufferedInputStream(new ByteArrayInputStream(pdfFileData)));
+            try {
+                // decrypt the document if necessary
+                if (document.isEncrypted()) {
+                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
+                    try {
+                        document.openProtection( sdm );
+                    } catch (BadSecurityHandlerException e) {
+                        throw new PDFExtractionException(e);
+                    } catch (CryptographyException e) {
+                        throw new PDFExtractionException(e);
+                    }
+                }
 
-            // use default encoding
-            output = new StringWriter();
+                // use default encoding
+                Writer output = new StringWriter();
+                try {
+                    PDFTextStripper stripper = new PDFTextStripper();
+                    stripper.setForceParsing(false);
+                    stripper.setSortByPosition(false);
+                    stripper.setShouldSeparateByBeads(true);
+                    stripper.setStartPage(startPage);
+                    stripper.setEndPage(endPage);
 
-            PDFTextStripper stripper = new PDFTextStripper();
-            stripper.setForceParsing(false);
-            stripper.setSortByPosition(false);
-            stripper.setShouldSeparateByBeads(true);
-            stripper.setStartPage(startPage);
-            stripper.setEndPage(endPage);
+                    // Extract text for main document:
+                    stripper.writeText(document, output);
 
-            // Extract text for main document:
-            stripper.writeText(document, output);
+                    // ... also for any embedded PDFs:
+                    PDDocumentCatalog catalog = document.getDocumentCatalog();
+                    PDDocumentNameDictionary names = catalog.getNames();
 
-            // ... also for any embedded PDFs:
-            PDDocumentCatalog catalog = document.getDocumentCatalog();
-            PDDocumentNameDictionary names = catalog.getNames();
+                    if (names != null) {
+                        PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
 
-            if (names != null) {
-                PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+                        if (embeddedFiles != null) {
+                            Map<String,COSObjectable> embeddedFileNames = embeddedFiles.getNames();
 
-                if (embeddedFiles != null) {
-                    Map<String,COSObjectable> embeddedFileNames = embeddedFiles.getNames();
-
-                    if (embeddedFileNames != null) {
-                        for (Map.Entry<String,COSObjectable> ent : embeddedFileNames.entrySet()) {
-                            PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
-                            PDEmbeddedFile file = spec.getEmbeddedFile();
-                            if (file.getSubtype().equals("application/pdf")) {
-                                InputStream fis = file.createInputStream();
-                                PDDocument subDoc = null;
-                                try {
-                                    subDoc = PDDocument.load(fis);
-                                } finally {
-                                    fis.close();
-                                }
-                                try {
-                                    stripper.writeText( subDoc, output );
-                                } finally {
-                                    subDoc.close();
+                            if (embeddedFileNames != null) {
+                                for (Map.Entry<String,COSObjectable> ent : embeddedFileNames.entrySet()) {
+                                    PDComplexFileSpecification spec = (PDComplexFileSpecification) ent.getValue();
+                                    PDEmbeddedFile file = spec.getEmbeddedFile();
+                                    if (file.getSubtype().equals(MIME_TYPE_PDF)) {
+                                        InputStream fis = file.createInputStream();
+                                        PDDocument subDoc = null;
+                                        try {
+                                            subDoc = PDDocument.load(fis);
+                                        } finally {
+                                            fis.close();
+                                        }
+                                        try {
+                                            stripper.writeText( subDoc, output );
+                                        } finally {
+                                            subDoc.close();
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+
+                    return output.toString().getBytes();
+
+                } finally {
+                    output.close();
                 }
-            }
-
-            return output.toString().getBytes();
-
-        } catch (CryptographyException e) {
-            throw new PDFExtractionException(e);
-
-        } catch (BadSecurityHandlerException e) {
-            throw new PDFExtractionException(e);
-
-        } finally {
-            if (output != null) {
-                output.close();
-            }
-            if (document != null) {
+            } finally {
                 document.close();
             }
+        } catch (IOException e) {
+            throw new PDFExtractionException(e);
         }
     }
 
