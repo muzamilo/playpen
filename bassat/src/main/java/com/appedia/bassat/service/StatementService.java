@@ -16,7 +16,7 @@ public interface StatementService {
      *
      * @return
      */
-    List<ImportedStatement> getImportedStatements(ImportStatus status);
+    List<ImportedStatement> getImportedStatements(ImportStatus status) throws StatementIntegrityViolationException;
 
     /**
      *
@@ -28,15 +28,15 @@ public interface StatementService {
      *
      * @param statementComposite
      */
-    void insertStatement(StatementComposite statementComposite) throws CreateStatementException;
+    void insertStatement(StatementComposite statementComposite) throws StatementIntegrityViolationException;
 
     /**
      *
      * @param importedStatement
      * @param statementComposite
-     * @throws CreateStatementException
+     * @throws StatementIntegrityViolationException
      */
-    void processImportedStatement(ImportedStatement importedStatement, StatementComposite statementComposite) throws CreateStatementException;
+    void processImportedStatement(ImportedStatement importedStatement, StatementComposite statementComposite) throws StatementIntegrityViolationException;
 
     /**
      *
@@ -44,8 +44,8 @@ public interface StatementService {
      * @param accountNumber
      * @param fileData
      * @param status
-     * @throws CreateStatementException
+     * @throws StatementIntegrityViolationException
      */
-    void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws CreateStatementException;
+    void uploadStatementFile(long userId, String accountNumber, byte[] fileData, ImportStatus status) throws StatementIntegrityViolationException;
 
 }

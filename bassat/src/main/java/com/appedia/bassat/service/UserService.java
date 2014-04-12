@@ -2,6 +2,8 @@ package com.appedia.bassat.service;
 
 import com.appedia.bassat.domain.User;
 
+import java.util.List;
+
 /**
  *
  * @author Muz Omar

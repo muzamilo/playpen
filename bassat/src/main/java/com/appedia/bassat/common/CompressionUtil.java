@@ -66,4 +66,11 @@ public class CompressionUtil {
             inflater.end();
         }
     }
+
+    public static void main(String[] args) throws Exception {
+        String s = "Hello World";
+        System.out.println(s);
+        System.out.println(new String(compress(s.getBytes())));
+        System.out.println(new String(decompress(compress(s.getBytes()))));
+    }
 }

@@ -6,7 +6,7 @@
 
     <cache/>
 
-    <select id="getImportedStatementsByStatus" parameterType="ImportStatus" resultType="ImportedStatement">
+    <select id="getImportedStatementsByStatus" resultType="ImportedStatement">
         SELECT imported_statement_id as importedStatementId,
                import_datetime as importDateTime,
                link_user_id as linkUserId,
@@ -15,7 +15,7 @@
                pdf_file_data as pdfFileData,
                status
         FROM imported_statement
-        WHERE status = '#{statusCode}'
+        WHERE status = #{statusCode}
     </select>
 
     <insert id="insertImportedStatement" parameterType="ImportedStatement">

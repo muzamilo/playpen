@@ -26,4 +26,11 @@ public interface AccountService {
      */
     boolean checkUserHasAccount(User user, String identifier);
 
+    /**
+     *
+     * @param identifier
+     * @return
+     */
+    List<Account> getAccountsByIdentifier(String identifier, boolean performPartialMatch);
+
 }

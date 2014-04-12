@@ -14,6 +14,6 @@ public interface MailboxMessageHandler {
      * @param message
      * @throws MessagingException
      */
-    void onMessage(Message message) throws Exception;
+    void onMessage(Message message, String fromEmail) throws Exception;
 
 }

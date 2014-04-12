@@ -6,14 +6,33 @@
 
     <cache/>
 
-    <select id="getUserAccounts" parameterType="long" resultType="Account">
+    <select id="getUserAccounts" resultType="Account">
         SELECT account_id as accountId,
                user_id as userId,
                type,
                identifier
         FROM account
-        WHERE user_id=#{userId}
+        WHERE user_id=#{value}
     </select>
+
+    <select id="getAccountsByIdentifier" resultType="Account">
+        SELECT account_id as accountId,
+        user_id as userId,
+        type,
+        identifier
+        FROM account
+        WHERE identifier=#{value}
+    </select>
+
+    <select id="getAccountsByPartialIdentifier" resultType="Account">
+        SELECT account_id as accountId,
+        user_id as userId,
+        type,
+        identifier
+        FROM account
+        WHERE identifier like '%#{value}'
+    </select>
+
 
 </mapper>
 

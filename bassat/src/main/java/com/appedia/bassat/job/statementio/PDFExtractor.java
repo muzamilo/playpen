@@ -41,9 +41,8 @@ public class PDFExtractor {
             try {
                 // decrypt the document if necessary
                 if (document.isEncrypted()) {
-                    StandardDecryptionMaterial sdm = new StandardDecryptionMaterial( password );
                     try {
-                        document.openProtection( sdm );
+                        document.openProtection(new StandardDecryptionMaterial(password));
                     } catch (BadSecurityHandlerException e) {
                         throw new PDFExtractionException(e);
                     } catch (CryptographyException e) {
@@ -108,6 +107,34 @@ public class PDFExtractor {
         } catch (IOException e) {
             throw new PDFExtractionException(e);
         }
+    }
+
+
+    /**
+     *
+     * @param pdfFileData
+     * @param password
+     * @return
+     * @throws IOException
+     */
+    public boolean checkValidPassword(byte[] pdfFileData, String password) throws IOException {
+        PDDocument document = PDDocument.load(new BufferedInputStream(new ByteArrayInputStream(pdfFileData)));
+        try {
+            // decrypt the document if necessary
+            if (document.isEncrypted()) {
+                try {
+                    document.openProtection(new StandardDecryptionMaterial(password));
+                    return true;
+                } catch (BadSecurityHandlerException e) {
+                    // ignore
+                } catch (CryptographyException e) {
+                    // ignore
+                }
+            }
+        } finally {
+            document.close();
+        }
+        return false;
     }
 
 }

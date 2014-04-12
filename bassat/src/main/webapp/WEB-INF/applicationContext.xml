@@ -43,16 +43,16 @@
     </bean>
 
     <!-- Import Job Trigger, run every 5 seconds -->
-    <bean id="importJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail" ref="importJob" />
-        <property name="repeatInterval" value="20000" />
-        <property name="startDelay" value="500" />
+    <bean id="mailboxPollingJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail" ref="mailboxPollingJob" />
+        <property name="repeatInterval" value="5000" />
+        <property name="startDelay" value="0" />
     </bean>
 
     <!-- Process Job Trigger, run every 5 seconds -->
-    <bean id="processJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-        <property name="jobDetail" ref="processJob" />
-        <property name="repeatInterval" value="2000" />
+    <bean id="statementImporterJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail" ref="statementImporterJob" />
+        <property name="repeatInterval" value="5000" />
         <property name="startDelay" value="500" />
     </bean>
 
@@ -60,8 +60,8 @@
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <ref bean="importJobTrigger"/>
-                <ref bean="processJobTrigger"/>
+                <!--<ref bean="mailboxPollingJobTrigger"/>-->
+                <ref bean="statementImporterJobTrigger"/>
             </list>
         </property>
     </bean>
@@ -72,23 +72,25 @@
     <bean id="accountService" class="com.appedia.bassat.service.AccountServiceImpl"/>
 
     <!-- define the running Import Job -->
-    <bean name="importJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.MailImportJob"/>
+    <bean name="mailboxPollingJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.appedia.bassat.job.MailboxPollingJob"/>
         <property name="jobDataAsMap">
             <map>
                 <entry key="statementService" value-ref="statementService"/>
                 <entry key="userService" value-ref="userService"/>
                 <entry key="accountService" value-ref="accountService"/>
                 <entry key="statementBuilder" value-ref="statementBuilder"/>
-                <entry key="mailboxReader" value-ref="mailboxReader"/>
+                <entry key="mailboxMessagePoller" value-ref="mailboxMessagePoller"/>
                 <entry key="pdfExtractor" value-ref="pdfExtractor"/>
+                <!-- configurations -->
+                <entry key="originatorSenderEmail" value="info@standardbank.co.za"/>
             </map>
         </property>
     </bean>
 
     <!-- define the running Import Job -->
-    <bean name="processJob" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="com.appedia.bassat.job.ProcessJob"/>
+    <bean name="statementImporterJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass" value="com.appedia.bassat.job.StatementImporterJob"/>
         <property name="jobDataAsMap">
             <map>
                 <entry key="statementService" value-ref="statementService"/>
@@ -101,7 +103,7 @@
     </bean>
 
     <!-- define the mailbox reader -->
-    <bean id="mailboxReader" class="com.appedia.bassat.job.mailintegration.MailboxReader">
+    <bean id="mailboxMessagePoller" class="com.appedia.bassat.job.mailintegration.MailboxMessagePoller">
         <property name="host" value="pop.gmail.com"/>
         <property name="protocol" value="imaps"/>
         <property name="username" value="send2basat@gmail.com"/>

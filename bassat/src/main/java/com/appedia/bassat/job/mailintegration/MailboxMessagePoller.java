@@ -1,6 +1,7 @@
 package com.appedia.bassat.job.mailintegration;
 
 import javax.mail.*;
+import javax.mail.internet.InternetAddress;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.Set;
  *
  * @author Muz Omar
  */
-public class MailboxReader {
+public class MailboxMessagePoller {
 
     private static final String FOLDER_INBOX = "inbox";
 
@@ -22,7 +23,7 @@ public class MailboxReader {
 
     private Set<String> deletedMessages = new HashSet<String>();
 
-    public MailboxReader() {
+    public MailboxMessagePoller() {
     }
 
     public String getHost() {
@@ -96,7 +97,8 @@ public class MailboxReader {
                     for (Message message : inbox.getMessages()) {
                         try {
                             if (canHandleMessage(message)) {
-                                handler.onMessage(message);
+                                String emailAddress = message.getFrom() == null ? null : ((InternetAddress) message.getFrom()[0]).getAddress();
+                                handler.onMessage(message, emailAddress);
                                 deleteMessage(message);
                             }
                         } catch (InvalidMessageException e) {

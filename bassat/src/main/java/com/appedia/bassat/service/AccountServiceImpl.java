@@ -5,6 +5,7 @@ import com.appedia.bassat.domain.User;
 import com.appedia.bassat.persistence.AccountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,10 +23,7 @@ public class AccountServiceImpl implements AccountService {
      * @return
      */
     public List<Account> getUserAccounts(long userId) {
-        System.out.println("Find user accounts for " + userId);
-        List<Account> results = accountMapper.getUserAccounts(userId);
-        System.out.println("Found " + results.size() + " results");
-        return results;
+        return accountMapper.getUserAccounts(userId);
     }
 
     /**
@@ -44,6 +42,20 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param identifier
+     * @param performPartialMatch
+     * @return
+     */
+    public List<Account> getAccountsByIdentifier(String identifier, boolean performPartialMatch) {
+        if (performPartialMatch) {
+            return Arrays.asList(new Account[] { accountMapper.getAccountsByIdentifier(identifier) });
+        } else {
+            return accountMapper.getAccountsByPartialIdentifier(identifier);
+        }
     }
 
 }

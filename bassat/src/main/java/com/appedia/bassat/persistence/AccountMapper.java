@@ -17,4 +17,18 @@ public interface AccountMapper {
      */
     List<Account> getUserAccounts(long userId);
 
+    /**
+     *
+     * @param identifier
+     * @return
+     */
+    Account getAccountsByIdentifier(String identifier);
+
+    /**
+     *
+     * @param partialIdentifier
+     * @return
+     */
+    List<Account> getAccountsByPartialIdentifier(String partialIdentifier);
+
 }

@@ -8,6 +8,7 @@ import com.appedia.bassat.job.statementio.PDFExtractor;
 import com.appedia.bassat.job.statementio.ParseException;
 import com.appedia.bassat.job.statementio.StatementBuilder;
 import com.appedia.bassat.service.AccountService;
+import com.appedia.bassat.service.StatementIntegrityViolationException;
 import com.appedia.bassat.service.StatementService;
 import com.appedia.bassat.service.UserService;
 import org.quartz.JobExecutionContext;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * @author muz
  */
-public class ProcessJob extends QuartzJobBean {
+public class StatementImporterJob extends QuartzJobBean {
 
     private UserService userService;
     private AccountService accountService;
@@ -35,30 +36,34 @@ public class ProcessJob extends QuartzJobBean {
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
         System.out.println("Checking for pending imports ...");
-        List<ImportedStatement> pendingStatements = getStatementService().getImportedStatements(ImportStatus.PENDING);
-        for (ImportedStatement importedStatement : pendingStatements) {
-            try {
-                // for each imported statement ...
-                System.out.println("Found " + importedStatement);
-                // find the user owner of this statement
-                User user = getUserService().getUserById(importedStatement.getLinkUserId());
-                // extract the statement file from PDF to text
-                byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
-                // parse the statement into internal data structures
-                StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
-                // process the statement
-                getStatementService().processImportedStatement(importedStatement, statementComposite);
+        try {
+            List<ImportedStatement> pendingStatements = getStatementService().getImportedStatements(ImportStatus.PENDING);
+            for (ImportedStatement importedStatement : pendingStatements) {
+                try {
+                    // for each imported statement ...
+                    System.out.println("Found " + importedStatement);
+                    // find the user owner of this statement
+                    User user = getUserService().getUserById(importedStatement.getLinkUserId());
+                    // extract the statement file from PDF to text
+                    byte[] txtFileData = getPdfExtractor().extractToText(importedStatement.getPdfFileData(), user.getIdNumber());
+                    // parse the statement into internal data structures
+                    StatementComposite statementComposite = getStatementBuilder().build(txtFileData);
+                    // process the statement
+                    getStatementService().processImportedStatement(importedStatement, statementComposite);
 
-            } catch (ParseException e) {
-                System.err.println("Error parsing statement file - updating import as failure");
-                // persist FAILED import statement record
-                importedStatement.setStatus(ImportStatus.ERROR);
-                getStatementService().updateImportedStatement(importedStatement);
+                } catch (ParseException e) {
+                    System.err.println("Error parsing statement file - updating import as failure");
+                    // persist FAILED import statement record
+                    importedStatement.setStatus(ImportStatus.ERROR);
+                    getStatementService().updateImportedStatement(importedStatement);
 
-            } catch (Exception e) {
-                System.err.println("There was a problem processing imported statement " + importedStatement.getImportedStatementId() + ": " + e.toString());
-                e.printStackTrace();
+                } catch (Exception e) {
+                    System.err.println("There was a problem processing imported statement " + importedStatement.getImportedStatementId() + ": " + e.toString());
+                    e.printStackTrace();
+                }
             }
+        } catch (StatementIntegrityViolationException e) {
+            System.err.println("There was a problem processing pending imports : " + e.toString());
         }
 
     }
