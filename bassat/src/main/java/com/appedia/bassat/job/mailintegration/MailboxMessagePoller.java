@@ -124,6 +124,7 @@ public class MailboxMessagePoller {
      */
     private boolean canHandleMessage(Message message) throws MessagingException {
         String messageId = Long.toString(message.getReceivedDate().getTime());
+        System.out.println("Check for message " + messageId);
         return !deletedMessages.contains(messageId);
     }
 
@@ -135,6 +136,7 @@ public class MailboxMessagePoller {
     private void deleteMessage(Message message) throws MessagingException {
         if (enableMockDeletes) {
             String messageId = Long.toString(message.getReceivedDate().getTime());
+            System.out.println("Delete message " + messageId);
             deletedMessages.add(messageId);
         } else {
             message.setFlag(Flags.Flag.DELETED, true);

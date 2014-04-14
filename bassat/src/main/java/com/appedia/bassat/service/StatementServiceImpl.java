@@ -62,10 +62,12 @@ public class StatementServiceImpl implements StatementService {
             List<Transaction> transactions = Arrays.asList(statementComposite.getTransactions());
             for (Transaction transaction : transactions) {
                 transaction.setStatementId(statement.getStatementId());
+                System.out.print("About to add " + transaction + "...");
                 transactionMapper.insertTransaction(transaction);
+                System.out.println("OK");
             }
         } catch (DuplicateKeyException e) {
-            throw new StatementIntegrityViolationException("Statement for " + statement.getAccountIdentifier() + " has already been processed", e);
+            throw new StatementIntegrityViolationException("\nStatement for " + statement.getAccountIdentifier() + " has already been processed", e);
         }
     }
 
@@ -120,9 +122,11 @@ public class StatementServiceImpl implements StatementService {
         }
 
         try {
+            System.out.print("Inserting " + statement + "...");
             importedStatementMapper.insertImportedStatement(statement);
+            System.out.println("OK");
         } catch (DuplicateKeyException e) {
-            throw new StatementIntegrityViolationException("Statement for " + accountNumber + " has already been imported", e);
+            throw new StatementIntegrityViolationException("\nStatement for " + accountNumber + " has already been imported", e);
         }
     }
 

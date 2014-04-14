@@ -45,7 +45,7 @@
     <!-- Import Job Trigger, run every 5 seconds -->
     <bean id="mailboxPollingJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="mailboxPollingJob" />
-        <property name="repeatInterval" value="5000" />
+        <property name="repeatInterval" value="10000" />
         <property name="startDelay" value="0" />
     </bean>
 
@@ -53,14 +53,14 @@
     <bean id="statementImporterJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
         <property name="jobDetail" ref="statementImporterJob" />
         <property name="repeatInterval" value="5000" />
-        <property name="startDelay" value="500" />
+        <property name="startDelay" value="1000" />
     </bean>
 
     <!-- scheduler for the Import Job based on the Simple Trigger -->
     <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
-                <!--<ref bean="mailboxPollingJobTrigger"/>-->
+                <ref bean="mailboxPollingJobTrigger"/>
                 <ref bean="statementImporterJobTrigger"/>
             </list>
         </property>

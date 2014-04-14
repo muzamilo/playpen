@@ -39,7 +39,15 @@ public class TransactionAccountStatementParser implements StatementParser {
                 nextSegment = Segment.TRANSACTIONS;
                 if (!hasHeader) {
                     if (statement.getFromDate() == null) {
-                        throw new IllegalStateException("No statement from-date was set");
+                        throw new ParseException("No statement from-date was set");
+                    } else if (statement.getToDate() == null) {
+                        throw new ParseException("No statement to-date was set");
+                    } else if (statement.getFrequency() == null) {
+                        throw new ParseException("No statement frequency was set");
+                    } else if (statement.getSourceReference() == null) {
+                        throw new ParseException("No statement number was set");
+                    } else if (statement.getAccountIdentifier() == null) {
+                        throw new ParseException("No account identifier was set");
                     }
                     Calendar cal = GregorianCalendar.getInstance();
                     cal.setTime(statement.getFromDate());
@@ -47,7 +55,7 @@ public class TransactionAccountStatementParser implements StatementParser {
                     hasHeader = true;
                 }
 
-            } else if (!hasHeader && nextSegment == Segment.HEADER) {
+            } else if (!hasHeader) {
                 try {
                     if (dataline.contains("Statement No")) {
                         statement.setSourceReference(dataline.substring(dataline.indexOf("Statement No") + 13, dataline.length()));
@@ -68,7 +76,11 @@ public class TransactionAccountStatementParser implements StatementParser {
                             throw new ParseException("Invalid account number " + statement.getAccountIdentifier());
                         }
                     }
+                } catch (ParseException e) {
+                    System.out.println(dataline);
+                    throw e;
                 } catch (Exception e) {
+                    System.out.println(dataline);
                     throw new ParseException("Unable to parse statement header", e);
                 }
 
@@ -96,6 +108,7 @@ public class TransactionAccountStatementParser implements StatementParser {
                     lastTxDate = txDate;
                     transactionLines.add(new Transaction(txDate, description, amount));
                 } catch (Exception e) {
+                    System.out.println(dataline);
                     throw new ParseException("Unable to parse transaction", e);
                 }
             }

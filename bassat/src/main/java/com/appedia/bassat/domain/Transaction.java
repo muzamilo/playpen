@@ -50,4 +50,14 @@ public class Transaction {
     public void setStatementId(long statementId) {
         this.statementId = statementId;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "statementId=" + statementId +
+                ", txDate=" + txDate +
+                ", description='" + description + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

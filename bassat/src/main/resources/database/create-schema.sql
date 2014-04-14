@@ -76,8 +76,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `tx_date` date NOT NULL,
   `description` varchar(64) NOT NULL,
   `amount` decimal(13,2) NOT NULL,
-  PRIMARY KEY  (`transaction_id`),
-  UNIQUE KEY `UNQ_TRANSACTION` (`tx_date`, `description`, `amount`)
+  PRIMARY KEY  (`transaction_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -85,5 +84,6 @@ CREATE TABLE IF NOT EXISTS `transaction` (
 -- SETUP TEST DATA
 insert into user(user_id, id_number, title, first_name, surname, email, password) values (1, '7706035097083', 'Mr', 'Muzamil', 'Omar', 'muzamilo@gmail.com', 'Muzamil0');
 insert into account(account_id, user_id, type, identifier) values (1, 1, 1, '071153322');
+insert into account(account_id, user_id, type, identifier) values (2, 1, 2, '5520578441137929');
 commit;
 
