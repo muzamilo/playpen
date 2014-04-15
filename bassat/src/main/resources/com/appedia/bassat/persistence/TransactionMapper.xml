@@ -7,8 +7,8 @@
     <cache/>
 
     <insert id="insertTransaction" parameterType="Transaction">
-        INSERT INTO transaction (statement_id, tx_date, description, amount)
-        VALUES (#{statementId}, #{txDate}, #{description}, #{amount})
+        INSERT INTO transaction (statement_id, type, tx_date, description, tag, amount)
+        VALUES (#{statementId}, #{type}, #{txDate}, #{description}, #{tag}, #{amount})
     </insert>
 
 </mapper>

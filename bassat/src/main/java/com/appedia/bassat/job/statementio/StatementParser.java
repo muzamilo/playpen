@@ -1,5 +1,6 @@
 package com.appedia.bassat.job.statementio;
 
+import com.appedia.bassat.domain.AccountType;
 import com.appedia.bassat.domain.StatementComposite;
 
 import java.util.List;

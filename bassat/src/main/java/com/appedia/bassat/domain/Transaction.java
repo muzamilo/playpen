@@ -9,14 +9,26 @@ import java.util.Date;
 public class Transaction {
 
     private long statementId;
+    private AccountType type;
     private Date txDate;
     private String description;
+    private String tag;
     private double amount;
 
-    public Transaction(Date txDate, String description, double amount) {
+    public Transaction(AccountType type, Date txDate, String description, String tag, double amount) {
+        this.type = type;
         this.txDate = txDate;
         this.description = description;
+        this.tag = tag;
         this.amount = amount;
+    }
+
+    public AccountType getType() {
+        return type;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
     }
 
     public Date getTxDate() {
@@ -35,6 +47,14 @@ public class Transaction {
         this.description = description;
     }
 
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     public double getAmount() {
         return amount;
     }
@@ -49,15 +69,5 @@ public class Transaction {
 
     public void setStatementId(long statementId) {
         this.statementId = statementId;
-    }
-
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "statementId=" + statementId +
-                ", txDate=" + txDate +
-                ", description='" + description + '\'' +
-                ", amount=" + amount +
-                '}';
     }
 }

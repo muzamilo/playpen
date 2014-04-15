@@ -1,9 +1,6 @@
 package com.appedia.bassat.job.statementio;
 
-import com.appedia.bassat.domain.Statement;
-import com.appedia.bassat.domain.StatementComposite;
-import com.appedia.bassat.domain.StatementFrequency;
-import com.appedia.bassat.domain.Transaction;
+import com.appedia.bassat.domain.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -89,7 +86,7 @@ public class CreditCardStatementParser implements StatementParser {
                         double amount = Double.parseDouble(amountStr);
                         Date txDate = formatFor_dMMMyy.parse(txDateStr);
                         //System.out.println(txDate + " => " + amount + " : " + description);
-                        transactionLines.add(new Transaction(txDate, description, amount));
+                        transactionLines.add(new Transaction(AccountType.CARD, txDate, description, createTag(description), amount));
                     } catch (Exception e) {
                         System.out.println(dataline);
                         throw new ParseException("Unable to parse transaction", e);
@@ -98,5 +95,20 @@ public class CreditCardStatementParser implements StatementParser {
             }
         }
         return new StatementComposite(statement, transactionLines.toArray(new Transaction[transactionLines.size()]));
+    }
+
+    /**
+     *
+     */
+    private String createTag(String description) {
+        int l = description.length();
+        if ((description.charAt(1) == '*') || (description.charAt(1) == '#') || (description.charAt(0) == '|')) {
+            description = description.substring(2);
+            l = description.length();
+        }
+        if ((description.charAt(l - 4) == 'b') && (description.charAt(l - 6) == ' ') && StringUtils.isNumeric(description.substring(l - 4))) {
+            description = description.substring(l - 7);
+        }
+        return description.toUpperCase();
     }
 }

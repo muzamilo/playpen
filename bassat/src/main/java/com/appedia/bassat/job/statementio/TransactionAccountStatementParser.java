@@ -1,9 +1,6 @@
 package com.appedia.bassat.job.statementio;
 
-import com.appedia.bassat.domain.StatementComposite;
-import com.appedia.bassat.domain.StatementFrequency;
-import com.appedia.bassat.domain.Statement;
-import com.appedia.bassat.domain.Transaction;
+import com.appedia.bassat.domain.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -106,7 +103,7 @@ public class TransactionAccountStatementParser implements StatementParser {
                         txDate = formatFor_MMddyyyy.parse(txDayMonth + " " + txYear);
                     }
                     lastTxDate = txDate;
-                    transactionLines.add(new Transaction(txDate, description, amount));
+                    transactionLines.add(new Transaction(AccountType.TRANSACTIONAL, txDate, description, description.toUpperCase(), amount));
                 } catch (Exception e) {
                     System.out.println(dataline);
                     throw new ParseException("Unable to parse transaction", e);

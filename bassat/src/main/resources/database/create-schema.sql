@@ -73,8 +73,10 @@ DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE IF NOT EXISTS `transaction` (
   `transaction_id` int(10) unsigned NOT NULL auto_increment,
   `statement_id` int(10) NOT NULL,
+  `type` numeric(1) NOT NULL,
   `tx_date` date NOT NULL,
   `description` varchar(64) NOT NULL,
+  `tag` varchar(64) NOT NULL,
   `amount` decimal(13,2) NOT NULL,
   PRIMARY KEY  (`transaction_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
