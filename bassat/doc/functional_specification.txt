@@ -1,0 +1,59 @@
+Overview
+- List accounts with balance as at latest transaction date
+- Import Notifications 
+	- display number of unclassified transactions from last import
+	- display last imported statements
+- Income and Expense
+	- display graph of net income and expense for latest month
+	- indicate disposable income
+- Expense Distribution
+	- display pie graph of expense distribution
+
+Transactions
+- Select 'All' or individual account
+- Display paginated transactions for 'All' or individual selected account
+- Allow filter
+
+Income and Expense Trends
+- Net Income graph including net expenses over period
+- Next expense graph over period
+- Allow selection of classifcation 
+- Allow adjustment of start/end date
+		"Custom"
+		"Last 7 days"
+		"Last 14 days"
+		"This month"
+		"Last month"
+		"Last 3 months"
+		"Last 6 months"
+		"This year"
+		"Last year"
+		"All time"
+
+Spending Trends
+	- Show transactions that match
+	- [any/all]
+	- partial transaction description
+	- from 'All' or individual account
+	- During:
+		"Custom"
+		"Last 7 days"
+		"Last 14 days"
+		"This month"
+		"Last month"
+		"Last 3 months"
+		"Last 6 months"
+		"This year"
+		"Last year"
+		"All time"
+
+- Compare
+	- to ...
+
+Classifications
+	- Select List (Everyones/Mine)
+	- Classification | Match string | Any/Account/Type
+	- add/remove/re-order
+	- preview classifications (can select month)
+
+

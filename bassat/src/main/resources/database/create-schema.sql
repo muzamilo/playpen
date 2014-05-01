@@ -28,11 +28,15 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(10) unsigned NOT NULL auto_increment,
   `id_number` varchar(20) NOT NULL,
+  `registration_date` datetime NOT NULL,
+  `last_login_date` datetime,
   `title` varchar(10) NOT NULL,
   `first_name` varchar(30) NOT NULL,
   `surname` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
   `email` varchar(50) NOT NULL,
+  `store_original_statements` boolean NOT NULL DEFAULT 0,
+  `show_welcome_page` boolean NOT NULL DEFAULT 1,
   PRIMARY KEY  (`user_id`),
   UNIQUE KEY `UNQ_USER_EMAIL` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -84,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
 
 
 -- SETUP TEST DATA
-insert into user(user_id, id_number, title, first_name, surname, email, password) values (1, '7706035097083', 'Mr', 'Muzamil', 'Omar', 'muzamilo@gmail.com', 'Muzamil0');
+insert into user(user_id, id_number, registration_date, last_login_date, title, first_name, surname, email, password, store_original_statements, show_welcome_page) values (1, '7706035097083', CURRENT_TIMESTAMP(), null, 'Mr', 'Muzamil', 'Omar', 'muzamilo@gmail.com', 'Muzamil0', 1, 1);
 insert into account(account_id, user_id, type, identifier) values (1, 1, 1, '071153322');
 insert into account(account_id, user_id, type, identifier) values (2, 1, 2, '5520578441137929');
 commit;

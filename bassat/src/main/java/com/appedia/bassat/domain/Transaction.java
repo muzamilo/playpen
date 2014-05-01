@@ -70,4 +70,16 @@ public class Transaction {
     public void setStatementId(long statementId) {
         this.statementId = statementId;
     }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "statementId=" + statementId +
+                ", type=" + type +
+                ", txDate=" + txDate +
+                ", description='" + description + '\'' +
+                ", tag='" + tag + '\'' +
+                ", amount=" + amount +
+                '}';
+    }
 }

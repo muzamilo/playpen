@@ -1,6 +1,7 @@
 package com.appedia.bassat.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -9,6 +10,8 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private long userId;
+    private Date registrationDate;
+    private Date lastLoginDate;
     private String idNumber;
     private String title;
     private String firstName;
@@ -18,6 +21,22 @@ public class User implements Serializable {
 
     public long getUserId() {
         return userId;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public Date getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
     }
 
     public void setUserId(long userId) {

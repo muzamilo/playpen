@@ -28,4 +28,12 @@ public enum AccountType {
         return type;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return name();
+    }
 }

@@ -6,8 +6,10 @@
 
     <cache/>
 
-    <select id="getUserById" parameterType="long" resultType="User">
+    <select id="getUserById" resultType="User">
         SELECT user_id as userId,
+        registration_date as registrationDate,
+        last_login_date as lastLoginDate,
         id_number as idNumber,
         title,
         first_name as firstName,
@@ -15,11 +17,13 @@
         password,
         email
         FROM user
-        WHERE user_id=#{userId}
+        WHERE user_id=#{value}
     </select>
 
-    <select id="getUserByEmail" parameterType="String" resultType="User">
+    <select id="getUserByEmail" resultType="User">
         SELECT user_id as userId,
+               registration_date as registrationDate,
+               last_login_date as lastLoginDate,
                id_number as idNumber,
                title,
                first_name as firstName,
@@ -27,7 +31,7 @@
                password,
                email
         FROM user
-        WHERE email=#{emailAddress}
+        WHERE email=#{value}
     </select>
 
 </mapper>
